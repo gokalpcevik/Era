@@ -90,4 +90,8 @@ namespace Era
         m_pDeviceContextD3D->RSSetViewports(1u,&vp);
     }
 
+    void DeviceContext::DrawIndexed(UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation) const
+    {
+		m_pDeviceContextD3D->DrawIndexed(IndexCount, StartIndexLocation, BaseVertexLocation);
+    }
 }

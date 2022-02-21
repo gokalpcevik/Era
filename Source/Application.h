@@ -6,6 +6,8 @@
 #include "Window.h"
 #include "Log.h"
 #include "Scene/Scene.h"
+#include "Scene/Components.h"
+#include "Scene/Entity.h"
 
 namespace Era
 {
@@ -36,6 +38,9 @@ namespace Era
         std::shared_ptr<Window> m_Window;
         bool m_Running = true;
         std::shared_ptr<Scene> m_Scene;
+
+        Entity camera;
+        Entity box;
     };
 }
 

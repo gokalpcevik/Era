@@ -11,7 +11,7 @@ namespace Era
 {
 	using Microsoft::WRL::ComPtr;
 
-	static HRESULT CompileShader(ID3DBlob* pBlob, ID3DBlob* pErrorBlob, LPCWSTR const file,LPCSTR const target);
+	static HRESULT CompileShader(ID3DBlob** pBlob, ID3DBlob** pErrorBlob, LPCWSTR const file, LPCSTR const target);
 
 	class VertexShader
 	{

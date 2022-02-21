@@ -7,6 +7,7 @@ namespace Era
 	class Entity
 	{
 	public:
+		Entity() = default;
 		Entity(Scene* pScene,entt::entity entity);
 
 		template<typename T>

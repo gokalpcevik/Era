@@ -38,5 +38,12 @@ namespace Era
 			auto&& cc = m_Registry.get<CameraComponent>(entity);
 			cc.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
 		}
+		auto const meshView = m_Registry.view<MeshRendererComponent,TransformComponent>();
+
+		for(auto const entity : meshView)
+		{
+			auto&& [mrc,tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
+			m_Renderer->DrawMesh(tc.GetTransform(), mrc);
+		}
 	}
 }

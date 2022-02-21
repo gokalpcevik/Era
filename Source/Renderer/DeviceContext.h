@@ -21,6 +21,7 @@ namespace Era
 
         [[nodiscard]] const ComPtr<ID3D11DeviceContext>& GetD3D11DeviceContext() const { return m_pDeviceContextD3D; }
         [[nodiscard]] const ComPtr<ID3D11RenderTargetView>& GetBackBufferRTV() const { return m_pBackBufferRTV; }
+
     private:
         void Clear(const float* color);
         void CreateBackBufferRTV(ID3D11Device3* pDevice,IDXGISwapChain* pSwapChain);
@@ -28,6 +29,8 @@ namespace Era
         void ResetDepthStencilView_State();
         void ResetBackBufferRTVs();
         void SetViewport(const D3D11_VIEWPORT& vp) const;
+        void DrawIndexed(UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation) const;
+
     private:
         ComPtr<ID3D11DeviceContext> m_pDeviceContextD3D = nullptr;
         ComPtr<ID3D11RenderTargetView> m_pBackBufferRTV = nullptr;

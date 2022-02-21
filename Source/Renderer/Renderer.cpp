@@ -67,6 +67,8 @@ namespace Era
         mrc.GetVertexShader()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
         mrc.GetInputLayout()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
         mrc.SetPrimitiveTopology(m_DeviceContext->GetD3D11DeviceContext().Get());
+        m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(),0,0);
+
     }
 }
 

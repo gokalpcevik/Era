@@ -16,6 +16,13 @@ namespace Era
             return 0;
         ERA_INFO("Created a window with the following size: {}x{}",w,h);
         m_Scene = std::make_shared<Scene>(GetRenderer());
+        camera = m_Scene->CreateEntity();
+        auto projection = DirectX::XMMatrixPerspectiveFovLH(45.0f, m_Window->GetWidth() / m_Window->GetHeight(), 0.1f, 500.0f);
+        auto view = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+        camera.AddComponent<CameraComponent>(view,projection,ProjectionType::Perspective, m_Window->GetWidth() / m_Window->GetHeight());
+
+        box = m_Scene->CreateEntity();
+        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), "Meshes\\box.fbx");
         return Update();
     }
 

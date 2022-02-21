@@ -1,7 +1,11 @@
 #pragma once
 #include <DirectXMath.h>
 #include <filesystem>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 #include "../Renderer/Shader.h"
+#include <Windows.h>
 
 namespace Era
 {
@@ -116,8 +120,9 @@ namespace Era
 	private:
 		void InitializePipelineObjects(ID3D11Device* pDevice,const std::filesystem::path& meshPath)
 		{
-			m_VertexShader = std::make_shared<VertexShader>(pDevice, "Shaders\\Unlit.vshader");
-			m_PixelShader = std::make_shared<PixelShader>(pDevice, "Shaders\\Unlit.pshader");
+			
+			m_VertexShader = std::make_shared<VertexShader>(pDevice, "Shaders/Unlit.vshader");
+			m_PixelShader = std::make_shared<PixelShader>(pDevice, "Shaders/Unlit.pshader");
 			constexpr D3D11_INPUT_ELEMENT_DESC elems[] =
 			{
 				{"Position",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0}
@@ -125,6 +130,19 @@ namespace Era
 			m_InputLayout = std::make_shared<InputLayout>(pDevice, elems, 1,
 				m_VertexShader->GetBlob()->GetBufferPointer()
 				, m_VertexShader->GetBlob()->GetBufferSize());
+
+			Assimp::Importer importer;
+			auto const* pScene = importer.ReadFile(meshPath.string().c_str(), aiProcess_Triangulate |
+				aiProcess_JoinIdenticalVertices);
+			auto const* pMesh = pScene->mMeshes[0];
+			std::vector<Vertex> vertices;
+			vertices.reserve(pMesh->mNumVertices);
+			for(uint32_t i = 0; i < pMesh->mNumVertices; i++)
+			{
+				vertices.push_back({ {pMesh->mVertices[i].x ,pMesh->mVertices[i].y ,pMesh->mVertices[i].z} });
+			}
+
+
 		}
 
 	private:
