@@ -17,6 +17,14 @@ namespace Era
         InfoQueue::InitDXGI();
         m_DeviceContext->CreateBackBufferRTV(m_Device->GetD3D11Device3().Get(),m_SwapChain->GetDXGISwapChain().Get());
         m_DeviceContext->CreateDepthStencilView_State(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
+        D3D11_VIEWPORT vp{};
+        vp.Height = static_cast<float>(m_pWindow->GetHeight());
+        vp.Width = static_cast<float>(m_pWindow->GetWidth());
+        vp.TopLeftX = 0.0f;
+        vp.TopLeftY = 0.0f;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        SetViewport(vp);
     }
 
     void Renderer::Clear(const float colorRGBA[]) const
@@ -37,13 +45,13 @@ namespace Era
 	    m_DeviceContext->CreateDepthStencilView_State(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
 	    m_DeviceContext->CreateBackBufferRTV(m_Device->GetD3D11Device3().Get(),m_SwapChain->GetDXGISwapChain().Get());
         D3D11_VIEWPORT vp{};
-        vp.MinDepth = 0.0f;
-        vp.MaxDepth = 1.0f;
+        vp.Height = static_cast<float>(m_pWindow->GetHeight());
+        vp.Width = static_cast<float>(m_pWindow->GetWidth());
         vp.TopLeftX = 0.0f;
         vp.TopLeftY = 0.0f;
-        vp.Height = m_pWindow->GetHeight();
-        vp.Width = m_pWindow->GetWidth();
-        m_DeviceContext->SetViewport(vp);
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        SetViewport(vp);
     }
 
     void Renderer::SetViewport(const D3D11_VIEWPORT& vp) const
@@ -59,16 +67,17 @@ namespace Era
         p_rsc->Release();
     }
 
-    void Renderer::DrawMesh(const DX::XMMATRIX& transform, const MeshRendererComponent& mrc) const
+    void Renderer::DrawMesh(const MeshRendererComponent& mrc) const
     {
-        mrc.GetVertexBuffer()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
-        mrc.GetIndexBuffer()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
-        mrc.GetPixelShader()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
-        mrc.GetVertexShader()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
-        mrc.GetInputLayout()->Bind(m_DeviceContext->GetD3D11DeviceContext().Get());
-        mrc.SetPrimitiveTopology(m_DeviceContext->GetD3D11DeviceContext().Get());
+        ID3D11DeviceContext* pContext = m_DeviceContext->GetD3D11DeviceContext().Get();
+        mrc.GetVertexBuffer()->Bind(pContext);
+        mrc.GetIndexBuffer()->Bind(pContext);
+        mrc.GetConstantBuffer()->Bind(pContext);
+        mrc.GetPixelShader()->Bind(pContext);
+        mrc.GetVertexShader()->Bind(pContext);
+        mrc.GetInputLayout()->Bind(pContext);
+        MeshRendererComponent::SetPrimitiveTopology(pContext);
         m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(),0,0);
-
     }
 }
 

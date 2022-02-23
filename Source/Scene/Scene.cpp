@@ -27,7 +27,25 @@ namespace Era
 	void Scene::Draw()
 	{
 		auto cameraView = m_Registry.view<CameraComponent>();
-		
+
+		CameraComponent* pCamera = nullptr;
+
+		for(auto const entity : cameraView)
+		{
+			auto&& cc = m_Registry.get<CameraComponent>(entity);
+			if(cc.IsPrimary())
+			pCamera = &cc;
+		}
+
+		auto const meshView = m_Registry.view<MeshRendererComponent, TransformComponent>();
+
+		for (auto const entity : meshView)
+		{
+			auto&& [mrc, tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
+			mrc.SetWorldViewProjection(m_Renderer->GetGraphicsDevice()->GetD3D11DeviceContext().Get(),
+			                           tc.GetTransform() * pCamera->GetViewProjection());
+			m_Renderer->DrawMesh(mrc);
+		}
 	}
 
 	void Scene::OnResize(uint32_t width, uint32_t height)
@@ -38,12 +56,6 @@ namespace Era
 			auto&& cc = m_Registry.get<CameraComponent>(entity);
 			cc.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
 		}
-		auto const meshView = m_Registry.view<MeshRendererComponent,TransformComponent>();
-
-		for(auto const entity : meshView)
-		{
-			auto&& [mrc,tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
-			m_Renderer->DrawMesh(tc.GetTransform(), mrc);
-		}
+		
 	}
 }

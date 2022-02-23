@@ -11,7 +11,7 @@ namespace Era
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer(ID3D11Device3* pDevice, uint32_t* indices, uint32_t size);
+		IndexBuffer(ID3D11Device* pDevice, uint32_t* indices, uint32_t size);
 		void Bind(ID3D11DeviceContext* pContext) const;
 		//Member variables and parameters should be called count aswell but oh well
 		uint32_t GetCount() const { return m_Size; }

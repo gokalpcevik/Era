@@ -22,7 +22,6 @@ namespace Era
 
 	VertexShader::VertexShader(ID3D11Device* pDevice, std::filesystem::path path) : m_pDevice(pDevice), m_Path(std::move(path))
 	{
-		std::wcout << m_Path.c_str() << std::endl;;
 		DX_RESULT(CompileShader(&m_pBlob, &m_pErrorBlob, m_Path.c_str(), "vs_5_0"));
 		if(m_pBlob)
 			DX_RESULT(pDevice->CreateVertexShader(m_pBlob->GetBufferPointer(), m_pBlob->GetBufferSize(), nullptr, &m_pShader));

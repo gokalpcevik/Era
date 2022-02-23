@@ -2,7 +2,7 @@
 
 namespace Era
 {
-	IndexBuffer::IndexBuffer(ID3D11Device3* pDevice, uint32_t* indices, uint32_t size) : m_Size(size)
+	IndexBuffer::IndexBuffer(ID3D11Device* pDevice, uint32_t* indices, uint32_t size) : m_Size(size)
 	{
 		D3D11_BUFFER_DESC desc{};
 		desc.CPUAccessFlags = 0;

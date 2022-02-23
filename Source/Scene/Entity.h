@@ -30,7 +30,7 @@ namespace Era
 	template<typename T>
 	T& Entity::GetComponent()
 	{
-		return m_Scene->GetComponent<T>();
+		return m_Scene->GetComponent<T>(m_EntityHandle);
 	}
 
 	template <typename T, typename ... Args>

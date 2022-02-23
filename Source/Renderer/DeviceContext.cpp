@@ -20,7 +20,6 @@ namespace Era
 
 		DXGI_SWAP_CHAIN_DESC desc;
 		DX_RESULT(pSwapChain->GetDesc(&desc));
-
 		D3D11_TEXTURE2D_DESC descDepth;
 		descDepth.Width = desc.BufferDesc.Width;
 		descDepth.Height = desc.BufferDesc.Height;
@@ -64,6 +63,7 @@ namespace Era
 		DepthStencilViewDesc.Texture2D.MipSlice = 0u;
 
 		DX_RESULT(pDevice->CreateDepthStencilView(pDepthStencilTexture2D.Get(), &DepthStencilViewDesc, &m_pDepthSV));
+		
     }
 
     void DeviceContext::ResetDepthStencilView_State()

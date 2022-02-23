@@ -23,6 +23,7 @@ add_executable("Era"
         Renderer/InfoQueue.cpp
         Renderer/ErrorChecker.cpp
         Renderer/dxerr.cpp
+        Renderer/ConstantBuffer.cpp
         Scene/Scene.cpp
         Scene/Entity.cpp
         Scene/Components.h

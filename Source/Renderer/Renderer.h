@@ -25,15 +25,19 @@ namespace Era
         void Resize() const;
         void SetViewport(const D3D11_VIEWPORT& vp) const;
         void TakeScreenShot(const std::wstring& file) const;
-        void DrawMesh(const DX::XMMATRIX& transform,const MeshRendererComponent& mrc) const;
+        void DrawMesh(const MeshRendererComponent& mrc) const;
 
         const std::shared_ptr<GraphicsDevice>& GetGraphicsDevice() const { return m_Device; }
+
     private:
         std::shared_ptr<GraphicsDevice> m_Device;
         std::shared_ptr<DeviceContext> m_DeviceContext;
         std::shared_ptr<SwapChain> m_SwapChain;
 
         Window const* m_pWindow = nullptr;
+        DX::XMMATRIX m_ViewProjection{};
+
+        friend class Scene;
     };
 }
 

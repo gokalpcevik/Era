@@ -16,7 +16,7 @@ namespace Era
     class VertexBuffer
 	{
     public:
-        VertexBuffer(ID3D11Device3* pDevice,Vertex* vertices,uint32_t size);
+        VertexBuffer(ID3D11Device* pDevice,Vertex* vertices,uint32_t size);
 
         void Bind(ID3D11DeviceContext* pContext) const;
     private:
@@ -24,7 +24,7 @@ namespace Era
     };
 
     template<typename Vertex>
-    VertexBuffer<Vertex>::VertexBuffer(ID3D11Device3 *pDevice, Vertex *vertices, uint32_t size)
+    VertexBuffer<Vertex>::VertexBuffer(ID3D11Device *pDevice, Vertex *vertices, uint32_t size)
     {
         D3D11_BUFFER_DESC desc{};
         desc.Usage = D3D11_USAGE_DEFAULT;

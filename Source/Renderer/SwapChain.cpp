@@ -10,8 +10,8 @@ namespace Era
     SwapChain::SwapChain(const Window& window, const ComPtr<ID3D11Device3>& pDevice)
     {
         DXGI_SWAP_CHAIN_DESC SwapChainDesc{};
-        SwapChainDesc.BufferDesc.Width = window.GetSurfaceWidth();
-        SwapChainDesc.BufferDesc.Height = window.GetSurfaceHeight();
+        SwapChainDesc.BufferDesc.Width = window.GetWidth();
+        SwapChainDesc.BufferDesc.Height = window.GetHeight();
         SwapChainDesc.OutputWindow = window.GetWin32WindowHandle();
         SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
         SwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;

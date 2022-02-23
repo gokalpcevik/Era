@@ -1,4 +1,4 @@
-cbuffer
+cbuffer CBuf
 {
     matrix g_WorldViewProjection;
     float4 g_Color;
