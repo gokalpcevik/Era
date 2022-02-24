@@ -20,23 +20,24 @@ namespace Era
         auto view = DX::XMMatrixLookAtLH(DX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DX::XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f), DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
         camera.AddComponent<CameraComponent>(ProjectionType::Perspective, (float)m_Window->GetWidth() / (float)m_Window->GetHeight());
-        camera.GetComponent<CameraComponent>().SetPerspectiveFOV(45.0f);
+        camera.GetComponent<CameraComponent>().SetPerspectiveHalfAngleFOV(45.0f);
         camera.GetComponent<CameraComponent>().SetViewMatrix(view);
         camera.GetComponent<CameraComponent>().SetPerspectiveFar(500.0f);
         camera.GetComponent<CameraComponent>().SetPerspectiveNear(0.1f);
         camera.GetComponent<CameraComponent>().SetAspectRatio((float)m_Window->GetWidth() / (float)m_Window->GetHeight());
-
         box = m_Scene->CreateEntity();
         box.AddComponent<TransformComponent>().Translation = { 0.0f,0.0f,+5.0f };
-        DX::XMVECTOR rot = DX::XMQuaternionRotationRollPitchYaw(45.0f,45.0f,0.0f);
+        DX::XMVECTOR rot = DX::XMQuaternionRotationRollPitchYaw(45.0f,0.0f,0.0f);
         DX::XMStoreFloat4(&box.GetComponent<TransformComponent>().Rotation, rot);
         box.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
-        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), "Assets/box.fbx");
+
+        MeshAsset meshAsset("Assets/monkey.fbx");
+        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(),meshAsset );
 
         return Update();
     }
 
-    int Application::Update() const
+    int Application::Update()
     {
         while (m_Running)
         {

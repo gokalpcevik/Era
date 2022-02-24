@@ -18,7 +18,7 @@ add_executable("Era"
         Renderer/Texture2D.cpp
         Renderer/InputLayout.cpp
         Renderer/Shader.cpp
-        Renderer/Mesh.cpp
+        Renderer/MeshAsset.cpp
         Renderer/Renderer.cpp
         Renderer/InfoQueue.cpp
         Renderer/ErrorChecker.cpp
@@ -30,7 +30,7 @@ add_executable("Era"
         Log.cpp
         Application.cpp
         Window.cpp
-        Main.cpp)
+        Main.cpp "Renderer/MeshAsset.h" "Renderer/MeshAsset.cpp")
 
 set_target_properties("Era"
         PROPERTIES

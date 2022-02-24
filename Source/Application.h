@@ -31,7 +31,7 @@ namespace Era
         void Exit();
         void SetArgs(CommandLineArguments args) { m_CmdArgs = args; }
     private:
-        int Update() const;
+        int Update();
         const std::shared_ptr<Renderer>& GetRenderer() const { return m_Window->GetRenderer(); }
     private:
         CommandLineArguments m_CmdArgs{};
