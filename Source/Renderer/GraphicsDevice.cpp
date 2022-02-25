@@ -26,19 +26,19 @@ namespace Era
                 m_pDeviceContext = std::make_shared<DeviceContext>(m_pDeviceContextD3D);
     }
 
-    std::shared_ptr<IndexBuffer> GraphicsDevice::CreateIndexBuffer(uint32_t* indices, uint32_t size) const
+    auto GraphicsDevice::CreateIndexBuffer(uint32_t* indices, uint32_t size) const -> std::shared_ptr<IndexBuffer>
     {
         return std::make_shared<IndexBuffer>(m_pDevice3D3D.Get(), indices, size);
     }
 
-    std::shared_ptr<Texture2D> GraphicsDevice::CreateTexture2D(std::wstring_view path) const
+    auto GraphicsDevice::CreateTexture2D(std::wstring_view path) const -> std::shared_ptr<Texture2D>
     {
         return std::make_shared<Texture2D>(m_pDevice3D3D.Get(), path);
     }
 
-    std::shared_ptr<InputLayout> GraphicsDevice::CreateInputLayout(
+    auto GraphicsDevice::CreateInputLayout(
 	    const D3D11_INPUT_ELEMENT_DESC* elements, uint32_t size, const void* pShaderBytecodeWithInputSignature,
-	    size_t byteCodeLength) const
+	    size_t byteCodeLength) const -> std::shared_ptr<InputLayout>
     {
         return std::make_shared<InputLayout>(m_pDevice3D3D.Get(),
             elements,
@@ -47,12 +47,12 @@ namespace Era
             byteCodeLength);
     }
 
-    VertexShaderRef GraphicsDevice::CreateVertexShader(std::wstring_view path) const
+    auto GraphicsDevice::CreateVertexShader(std::wstring_view path) const -> VertexShaderRef
     {
         return std::make_shared<VertexShader>(m_pDevice3D3D.Get(), path);
     }
 
-    PixelShaderRef GraphicsDevice::CreatePixelShader(std::wstring_view path) const
+    auto GraphicsDevice::CreatePixelShader(std::wstring_view path) const -> PixelShaderRef
     {
         return std::make_shared<PixelShader>(m_pDevice3D3D.Get(), path);
     }

@@ -6,8 +6,8 @@
 
 namespace Era
 {
-    int Application::Start()
-    {
+	auto Application::Start() -> int
+	{
         Log::Init();
         uint32_t w = 1600;
         uint32_t h = 900;
@@ -19,26 +19,25 @@ namespace Era
         camera = m_Scene->CreateEntity();
         auto view = DX::XMMatrixLookAtLH(DX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DX::XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f), DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
-        camera.AddComponent<CameraComponent>(ProjectionType::Perspective, (float)m_Window->GetWidth() / (float)m_Window->GetHeight());
-        camera.GetComponent<CameraComponent>().SetPerspectiveHalfAngleFOV(45.0f);
-        camera.GetComponent<CameraComponent>().SetViewMatrix(view);
-        camera.GetComponent<CameraComponent>().SetPerspectiveFar(500.0f);
-        camera.GetComponent<CameraComponent>().SetPerspectiveNear(0.1f);
-        camera.GetComponent<CameraComponent>().SetAspectRatio((float)m_Window->GetWidth() / (float)m_Window->GetHeight());
+        auto&& cc = camera.AddComponent<CameraComponent>(ProjectionType::Perspective, (float)m_Window->GetWidth() / (float)m_Window->GetHeight());
+        cc.SetPerspectiveHalfAngleFOV(45.0f);
+        cc.SetViewMatrix(view);
+        cc.SetPerspectiveFar(500.0f);
+        cc.SetPerspectiveNear(0.1f);
+        cc.SetAspectRatio((float)m_Window->GetWidth() / (float)m_Window->GetHeight());
         box = m_Scene->CreateEntity();
         box.AddComponent<TransformComponent>().Translation = { 0.0f,0.0f,+5.0f };
         DX::XMVECTOR rot = DX::XMQuaternionRotationRollPitchYaw(45.0f,0.0f,0.0f);
         DX::XMStoreFloat4(&box.GetComponent<TransformComponent>().Rotation, rot);
         box.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
 
-        MeshAsset meshAsset("Assets/monkey.fbx");
+        MeshAsset meshAsset("Assets/monkey.fbx",0);
         box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(),meshAsset );
-
         return Update();
     }
 
-    int Application::Update()
-    {
+	auto Application::Update() const -> int
+	{
         while (m_Running)
         {
             while (m_Window->PollEvents())
@@ -62,10 +61,11 @@ namespace Era
 		                    }
 	                    }
 	                }
+                default: break;
                 }
             }
             m_Scene->Update();
-            const float color[] = { 0.0f,0.0f,0.0f,1.0f };
+            constexpr float color[] = { 0.15f,0.15f,0.15f,1.0f };
             GetRenderer()->Clear(color);
             m_Scene->Draw();
             GetRenderer()->Present(1, 0);
@@ -73,8 +73,8 @@ namespace Era
         return 0;
     }
 
-    Application& Application::Get()
-    {
+	auto Application::Get() -> Application&
+	{
         static Application S;
         return S;
     }

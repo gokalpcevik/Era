@@ -26,6 +26,8 @@ namespace Era
     template<typename Vertex>
     VertexBuffer<Vertex>::VertexBuffer(ID3D11Device *pDevice, Vertex *vertices, uint32_t size)
     {
+        if (!vertices)
+            return;
         D3D11_BUFFER_DESC desc{};
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.CPUAccessFlags = 0;

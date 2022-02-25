@@ -27,7 +27,7 @@ namespace Era
         void TakeScreenShot(const std::wstring& file) const;
         void DrawMesh(const MeshRendererComponent& mrc) const;
 
-        const std::shared_ptr<GraphicsDevice>& GetGraphicsDevice() const { return m_Device; }
+        [[nodiscard]] auto GetGraphicsDevice() const -> const std::shared_ptr<GraphicsDevice>& { return m_Device; }
 
     private:
         std::shared_ptr<GraphicsDevice> m_Device;

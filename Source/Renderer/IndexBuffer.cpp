@@ -4,6 +4,8 @@ namespace Era
 {
 	IndexBuffer::IndexBuffer(ID3D11Device* pDevice, uint32_t* indices, uint32_t size) : m_Size(size)
 	{
+		if (!indices)
+			return;
 		D3D11_BUFFER_DESC desc{};
 		desc.CPUAccessFlags = 0;
 		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;

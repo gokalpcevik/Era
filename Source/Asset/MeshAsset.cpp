@@ -3,10 +3,11 @@
 namespace Era
 {
 	
-	MeshAsset::MeshAsset(std::filesystem::path path) : m_Path(std::move(path))
+	MeshAsset::MeshAsset(std::filesystem::path path,uint32_t meshIndex) : Asset(path) , m_MeshIndex(meshIndex)
 	{
 		this->Import(m_Path);
 	}
+
 
 	void MeshAsset::Import(const std::filesystem::path& path)
 	{
@@ -14,8 +15,19 @@ namespace Era
 		auto const* pScene = importer.ReadFile(m_Path.string().c_str(), aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded
 		);
-		auto const* pMesh = pScene->mMeshes[0];
+		if(!pScene)
+		{
+			ERA_ERROR("Error while importing mesh: {0}", importer.GetErrorString());
+			m_Success = false;
+			return;
+		}
+		
+		auto const* pMesh = pScene->mMeshes[m_MeshIndex];
 		m_VertexPositions.reserve(pMesh->mNumVertices);
+
+		for (auto i = 0; i < 8; ++i)
+			m_HasTextureCoords[i] = pMesh->HasTextureCoords(i);
+
 		m_NumVertices = pMesh->mNumVertices;
 
 		for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
@@ -34,5 +46,6 @@ namespace Era
 			m_Indices.push_back(face.mIndices[1]);
 			m_Indices.push_back(face.mIndices[2]);
 		}
+
 	}
 }

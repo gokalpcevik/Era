@@ -10,27 +10,15 @@ find_package(assimp CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 
 add_executable("Era"
-        Renderer/GraphicsDevice.cpp
-        Renderer/DeviceContext.cpp
-        Renderer/SwapChain.cpp
-        Renderer/VertexBuffer.cpp
-        Renderer/IndexBuffer.cpp
-        Renderer/Texture2D.cpp
-        Renderer/InputLayout.cpp
-        Renderer/Shader.cpp
-        Renderer/MeshAsset.cpp
-        Renderer/Renderer.cpp
-        Renderer/InfoQueue.cpp
-        Renderer/ErrorChecker.cpp
-        Renderer/dxerr.cpp
-        Renderer/ConstantBuffer.cpp
-        Scene/Scene.cpp
-        Scene/Entity.cpp
-        Scene/Components.h
         Log.cpp
         Application.cpp
         Window.cpp
-        Main.cpp "Renderer/MeshAsset.h" "Renderer/MeshAsset.cpp")
+        Main.cpp
+        )
+
+add_subdirectory(Renderer)
+add_subdirectory(Scene)
+add_subdirectory(Asset)
 
 set_target_properties("Era"
         PROPERTIES

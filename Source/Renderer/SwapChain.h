@@ -19,7 +19,7 @@ namespace Era
     public:
         SwapChain(const Window& window,const ComPtr<ID3D11Device3>& pDevice);
         ~SwapChain() = default;
-        [[nodiscard]] const ComPtr<IDXGISwapChain>& GetDXGISwapChain() const { return m_pSwapChainD3D; }
+        [[nodiscard]] auto GetDXGISwapChain() const -> const ComPtr<IDXGISwapChain>& { return m_pSwapChainD3D; }
     private:
         void Present(uint32_t syncInterval,uint32_t flags) const;
         void ResizeBuffers() const;

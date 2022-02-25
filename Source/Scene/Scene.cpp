@@ -9,7 +9,7 @@ namespace Era
 
 	}
 
-	Entity Scene::CreateEntity()
+	auto Scene::CreateEntity() -> Entity
 	{
 		return {this,m_Registry.create()};
 	}
@@ -34,7 +34,7 @@ namespace Era
 		{
 			auto&& cc = m_Registry.get<CameraComponent>(entity);
 			if(cc.IsPrimary())
-			pCamera = &cc;
+				pCamera = &cc;
 		}
 
 		auto const meshView = m_Registry.view<MeshRendererComponent, TransformComponent>();
@@ -42,8 +42,9 @@ namespace Era
 		for (auto const entity : meshView)
 		{
 			auto&& [mrc, tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
-			mrc.SetWorldViewProjection(m_Renderer->GetGraphicsDevice()->GetD3D11DeviceContext().Get(),
-			                           tc.GetTransform() * pCamera->GetViewProjection());
+			if(pCamera)
+				mrc.SetWorldViewProjection(m_Renderer->GetGraphicsDevice()->GetD3D11DeviceContext().Get(),
+			                           DX::XMMatrixTranspose(tc.GetTransform() * pCamera->GetViewProjection()));
 			m_Renderer->DrawMesh(mrc);
 		}
 	}

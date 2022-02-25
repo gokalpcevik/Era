@@ -17,7 +17,7 @@ namespace Era
 			size_t byteCodeLength);
 
 		void Bind(ID3D11DeviceContext* pContext) const;
-		[[nodiscard]] const ComPtr<ID3D11InputLayout>& GetD3D11InputLayout() const { return m_InputLayout; }
+		[[nodiscard]] auto GetD3D11InputLayout() const -> const ComPtr<ID3D11InputLayout>& { return m_InputLayout; }
 
 	private:
 		ComPtr<ID3D11InputLayout> m_InputLayout;

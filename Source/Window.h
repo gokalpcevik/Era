@@ -15,16 +15,16 @@ namespace Era
         Window(uint32_t x, uint32_t y,uint32_t w, uint32_t h,std::string_view title,uint32_t flags);
 		Window(const Window&) = delete;
 		virtual ~Window();
-		int PollEvents();
-		[[nodiscard]] const SDL_Event& GetEvent() const { return m_event; }
-		[[nodiscard]] SDL_Window* GetSDLWindow() const { return m_window; }
-        [[nodiscard]] bool IsNullPtr() const;
-        [[nodiscard]] uint32_t GetWidth() const;
-        [[nodiscard]] uint32_t GetSurfaceWidth() const;
-        [[nodiscard]] uint32_t GetHeight() const;
-        [[nodiscard]] uint32_t GetSurfaceHeight() const;
-        [[nodiscard]] HWND GetWin32WindowHandle() const;
-        [[nodiscard]] const std::shared_ptr<Renderer>& GetRenderer() const { return m_pRenderer; }
+        auto PollEvents() -> int;
+		[[nodiscard]] auto GetEvent() const -> const SDL_Event& { return m_event; }
+		[[nodiscard]] auto GetSDLWindow() const -> SDL_Window* { return m_window; }
+        [[nodiscard]] auto IsNullPtr() const -> bool;
+        [[nodiscard]] auto GetWidth() const -> uint32_t;
+        [[nodiscard]] auto GetSurfaceWidth() const -> uint32_t;
+        [[nodiscard]] auto GetHeight() const -> uint32_t;
+        [[nodiscard]] auto GetSurfaceHeight() const -> uint32_t;
+        [[nodiscard]] auto GetWin32WindowHandle() const -> HWND;
+        [[nodiscard]] auto GetRenderer() const -> const std::shared_ptr<Renderer>& { return m_pRenderer; }
 	private:
 		SDL_Window* m_window = nullptr;
 		SDL_Event m_event{};

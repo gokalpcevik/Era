@@ -4,9 +4,12 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include "../Renderer/Shader.h"
+#include "../Asset/MeshAsset.h"
 #include "../Renderer/ConstantBuffer.h"
-#include "../Renderer/MeshAsset.h"
+#include "../Renderer/VertexBuffer.h"
+#include "../Renderer/IndexBuffer.h"
+#include "../Renderer/Shader.h"
+#include "../Renderer/InputLayout.h"
 #include <Windows.h>
 
 namespace Era
@@ -19,7 +22,7 @@ namespace Era
 		TransformComponent(DX::XMFLOAT3 Translation, DX::XMFLOAT4 Rotation, DX::XMFLOAT3 Scale)
 			: Translation(Translation), Rotation(Rotation) , Scale(Scale) {}
 
-		[[nodiscard]] DX::XMMATRIX GetTransform() const
+		[[nodiscard]] auto GetTransform() const -> DX::XMMATRIX
 		{
 			auto const RotationAsVec = DX::XMLoadFloat4(&Rotation);
 			return DX::XMMatrixScaling(Scale.x, Scale.y, Scale.z) * DX::XMMatrixRotationQuaternion(RotationAsVec) *
@@ -41,22 +44,22 @@ namespace Era
 			: m_ProjectionType(projectionType),m_AspectRatio(aspectRatio)
 		{}
 
-		[[nodiscard]]DX::XMMATRIX GetViewProjection() const
+		[[nodiscard]] auto GetViewProjection() const -> DX::XMMATRIX
 		{
 			return m_ViewMatrix * m_ProjectionMatrix;
 		}
 
-		float GetAspectRatio() const
+		auto GetAspectRatio() const -> float
 		{
 			return m_AspectRatio;
 		}
 
-		DX::XMMATRIX GetView() const
+		auto GetView() const -> DX::XMMATRIX
 		{
 			return m_ViewMatrix;
 		}
 
-		DX::XMMATRIX GetProjection()
+		auto GetProjection() -> DX::XMMATRIX
 		{
 			return m_ProjectionMatrix;
 		}
@@ -99,7 +102,7 @@ namespace Era
 			m_ProjectionType = type; RecalculateProjection();
 		}
 
-		bool IsPrimary() const
+		auto IsPrimary() const -> bool
 		{
 			return m_IsPrimary;
 		}
@@ -152,10 +155,10 @@ namespace Era
 
 		[[nodiscard]] const VertexBufferRef<Vertex>& GetVertexBuffer() const { return m_VertexBuffer; }
 		[[nodiscard]] const ConstantBufferRef<VSConstantBufferData>& GetConstantBuffer() const { return m_VSConstantBuffer; }
-		[[nodiscard]] const IndexBufferRef& GetIndexBuffer() const { return m_IndexBuffer; }
-		[[nodiscard]] const VertexShaderRef& GetVertexShader() const { return m_VertexShader; }
-		[[nodiscard]] const PixelShaderRef& GetPixelShader() const { return m_PixelShader; }
-		[[nodiscard]] const InputLayoutRef& GetInputLayout() const { return m_InputLayout; }
+		[[nodiscard]] auto GetIndexBuffer() const -> const IndexBufferRef& { return m_IndexBuffer; }
+		[[nodiscard]] auto GetVertexShader() const -> const VertexShaderRef& { return m_VertexShader; }
+		[[nodiscard]] auto GetPixelShader() const -> const PixelShaderRef& { return m_PixelShader; }
+		[[nodiscard]] auto GetInputLayout() const -> const InputLayoutRef& { return m_InputLayout; }
 
 		static void SetPrimitiveTopology(ID3D11DeviceContext* pContext)
 		{
@@ -163,7 +166,7 @@ namespace Era
 		}
 		void SetWorldViewProjection(ID3D11DeviceContext* pContext,const DX::XMMATRIX& WorldViewProjection)
 		{
-			m_VSConstantBufferData.WorldViewProjection = DX::XMMatrixTranspose(WorldViewProjection);
+			m_VSConstantBufferData.WorldViewProjection = WorldViewProjection;
 			m_VSConstantBuffer->Update(pContext, m_VSConstantBufferData);
 		}
 
@@ -184,13 +187,14 @@ namespace Era
 				{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 			};
 
-			m_VertexShader = std::make_shared<VertexShader>(pDevice, "Shaders/Unlit.vshader");
-			m_InputLayout = std::make_shared<InputLayout>(pDevice, elems, _countof(elems),
+			m_VertexShader     = std::make_shared<VertexShader>(pDevice, "Shaders/Unlit.vshader");
+			if(m_VertexShader->GetBlob())
+				m_InputLayout      = std::make_shared<InputLayout>(pDevice, elems, _countof(elems),
 			                                              m_VertexShader->GetBlob()->GetBufferPointer()
 			                                              , m_VertexShader->GetBlob()->GetBufferSize());
-			m_PixelShader = std::make_shared<PixelShader>(pDevice, "Shaders/Unlit.pshader");
-			m_VertexBuffer = std::make_shared<VertexBuffer<Vertex>>(pDevice, vertices.data(), vertices.size());
-			m_IndexBuffer = std::make_shared<IndexBuffer>(pDevice, meshAsset.GetIndices().data(), meshAsset.GetNumIndices());
+			m_PixelShader      = std::make_shared<PixelShader>(pDevice, "Shaders/Unlit.pshader");
+			m_VertexBuffer     = std::make_shared<VertexBuffer<Vertex>>(pDevice, vertices.data(), vertices.size());
+			m_IndexBuffer	   = std::make_shared<IndexBuffer>(pDevice, meshAsset.GetIndices().data(), meshAsset.GetNumIndices());
 			m_VSConstantBuffer = std::make_shared<ConstantBuffer<VSConstantBufferData>>(pDevice, m_VSConstantBufferData, ConstantBufferType::Vertex);
 		}
 	private:

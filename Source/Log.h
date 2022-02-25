@@ -14,7 +14,7 @@ namespace Era
     public:
         Log() = default;
         static void Init();
-        static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; }
+        static auto GetLogger() -> std::shared_ptr<spdlog::logger>& { return s_Logger; }
     };   
    
 } // namespace Era

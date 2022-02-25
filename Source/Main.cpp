@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "Application.h"
 
-int main(int argc, char *argv[])
+auto main(int argc, char *argv[]) -> int
 {
     SDL_SetMainReady();
     if(SDL_Init(SDL_INIT_EVENTS) != 0)

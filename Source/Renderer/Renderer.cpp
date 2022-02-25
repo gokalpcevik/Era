@@ -59,17 +59,9 @@ namespace Era
         m_DeviceContext->SetViewport(vp);
     }
 
-    void Renderer::TakeScreenShot(const std::wstring& file) const
-    {
-        ID3D11Resource* p_rsc;
-        m_DeviceContext->GetBackBufferRTV()->GetResource(&p_rsc);
-        DirectX::SaveWICTextureToFile(m_DeviceContext->GetD3D11DeviceContext().Get(), p_rsc, GUID_ContainerFormatTiff, file.c_str());
-        p_rsc->Release();
-    }
-
     void Renderer::DrawMesh(const MeshRendererComponent& mrc) const
     {
-        ID3D11DeviceContext* pContext = m_DeviceContext->GetD3D11DeviceContext().Get();
+	    ID3D11DeviceContext* pContext = m_DeviceContext->GetD3D11DeviceContext().Get();
         mrc.GetVertexBuffer()->Bind(pContext);
         mrc.GetIndexBuffer()->Bind(pContext);
         mrc.GetConstantBuffer()->Bind(pContext);
@@ -77,7 +69,15 @@ namespace Era
         mrc.GetVertexShader()->Bind(pContext);
         mrc.GetInputLayout()->Bind(pContext);
         MeshRendererComponent::SetPrimitiveTopology(pContext);
-        m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(),0,0);
+        m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(), 0, 0);
+    }
+
+    void Renderer::TakeScreenShot(const std::wstring& file) const
+    {
+        ID3D11Resource* p_rsc;
+        m_DeviceContext->GetBackBufferRTV()->GetResource(&p_rsc);
+        DirectX::SaveWICTextureToFile(m_DeviceContext->GetD3D11DeviceContext().Get(), p_rsc, GUID_ContainerFormatTiff, file.c_str());
+        p_rsc->Release();
     }
 }
 

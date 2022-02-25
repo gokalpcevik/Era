@@ -2,8 +2,18 @@
 
 namespace Era
 {
-	HRESULT CompileShader(ID3DBlob** pBlob, ID3DBlob** pErrorBlob, LPCWSTR const file, LPCSTR const target)
+	auto CompileShader(ID3DBlob** pBlob, ID3DBlob** pErrorBlob, LPCWSTR const file, LPCSTR const target) -> HRESULT
 	{
+		if(!std::filesystem::exists(file))
+		{
+			size_t outputSize = wcslen(file) + 1; // +1 for null terminator
+			char* fileStr = new char[outputSize];
+			size_t charsConverted = 0;
+			const wchar_t* inputW = file;
+			wcstombs_s(&charsConverted, fileStr, outputSize, inputW, 256);
+			ERA_ERROR("Cannot find the specified shader file: {0}", fileStr);
+			return E_FAIL;
+		}
 		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #if defined( DEBUG ) || defined( _DEBUG )
 		flags |= D3DCOMPILE_DEBUG;

@@ -16,7 +16,8 @@ namespace Era
     {
         size_t Count;
         char** Args;
-        char* operator[](size_t Index) const
+
+        auto operator[](size_t Index) const -> char*
         {
             return Args[Index];
         }
@@ -26,13 +27,13 @@ namespace Era
     {
     public:
         Application() = default;
-        static Application& Get();
-        int Start();
+        static auto Get() -> Application&;
+        auto Start() -> int;
         void Exit();
         void SetArgs(CommandLineArguments args) { m_CmdArgs = args; }
     private:
-        int Update();
-        const std::shared_ptr<Renderer>& GetRenderer() const { return m_Window->GetRenderer(); }
+        auto Update() const -> int;
+        auto GetRenderer() const -> const std::shared_ptr<Renderer>& { return m_Window->GetRenderer(); }
     private:
         CommandLineArguments m_CmdArgs{};
         std::shared_ptr<Window> m_Window;

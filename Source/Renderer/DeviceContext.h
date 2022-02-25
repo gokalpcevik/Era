@@ -19,8 +19,8 @@ namespace Era
         explicit DeviceContext(const ComPtr<ID3D11DeviceContext>& pDeviceContext);
         ~DeviceContext() = default;
 
-        [[nodiscard]] const ComPtr<ID3D11DeviceContext>& GetD3D11DeviceContext() const { return m_pDeviceContextD3D; }
-        [[nodiscard]] const ComPtr<ID3D11RenderTargetView>& GetBackBufferRTV() const { return m_pBackBufferRTV; }
+        [[nodiscard]] auto GetD3D11DeviceContext() const -> const ComPtr<ID3D11DeviceContext>& { return m_pDeviceContextD3D; }
+        [[nodiscard]] auto GetBackBufferRTV() const -> const ComPtr<ID3D11RenderTargetView>& { return m_pBackBufferRTV; }
 
     private:
         void Clear(const float* color);

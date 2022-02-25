@@ -14,7 +14,7 @@ namespace Era
 		IndexBuffer(ID3D11Device* pDevice, uint32_t* indices, uint32_t size);
 		void Bind(ID3D11DeviceContext* pContext) const;
 		//Member variables and parameters should be called count aswell but oh well
-		uint32_t GetCount() const { return m_Size; }
+		auto GetCount() const -> uint32_t { return m_Size; }
 
 	private:
 

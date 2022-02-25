@@ -13,39 +13,38 @@ namespace Era
 
 		explicit Scene(const std::shared_ptr<Renderer>& pRenderer);
 
-		Entity CreateEntity();
-		void Destroy(Entity entity);
-
-		void Update();
-		void Draw();
+		auto CreateEntity() -> Entity;
+		auto Destroy(Entity entity) -> void;
+		auto Update() -> void;
+		auto Draw() -> void;
 
 		template<typename T>
-		T& GetComponent(entt::entity entity);
+		auto GetComponent(entt::entity entity) -> T&;
 
 		template<typename T, typename ...Args>
-		T& AddComponent(entt::entity entity,Args&&... args);
+		auto AddComponent(entt::entity entity,Args&&... args) -> T&;
 
 		template<typename T>
-		void RemoveComponent(entt::entity entity);
+		auto RemoveComponent(entt::entity entity) -> void;
 	private:
-		void OnResize(uint32_t width, uint32_t height);
+		auto OnResize(uint32_t width, uint32_t height) -> void;
 	private:
 		entt::registry m_Registry{};
 		std::shared_ptr<Renderer> m_Renderer;
 	};
 	template<typename T>
-	inline T& Scene::GetComponent(entt::entity entity)
+	inline auto Scene::GetComponent(entt::entity entity) -> T&
 	{
 		return m_Registry.get<T>(entity);
 	}
 	template<typename T, typename ...Args>
-	inline T& Scene::AddComponent(entt::entity entity, Args && ...args)
+	inline auto Scene::AddComponent(entt::entity entity, Args && ...args) -> T&
 	{
 		return m_Registry.emplace<T>(entity,std::forward<Args>(args)...);
 	}
 
 	template <typename T>
-	void Scene::RemoveComponent(entt::entity entity)
+	auto Scene::RemoveComponent(entt::entity entity) -> void
 	{
 		m_Registry.remove<T>(entity);
 	}

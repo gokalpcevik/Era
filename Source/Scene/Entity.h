@@ -11,10 +11,10 @@ namespace Era
 		Entity(Scene* pScene,entt::entity entity);
 
 		template<typename T>
-		T& GetComponent();
+		auto GetComponent() -> T&;
 
 		template<typename T,typename ...Args>
-		T& AddComponent(Args&&... args);
+		auto AddComponent(Args&&... args) -> T&;
 
 		template<typename T>
 		void RemoveComponent();
@@ -28,13 +28,13 @@ namespace Era
 		Scene* m_Scene{ nullptr };
 	};
 	template<typename T>
-	T& Entity::GetComponent()
+	auto Entity::GetComponent() -> T&
 	{
 		return m_Scene->GetComponent<T>(m_EntityHandle);
 	}
 
 	template <typename T, typename ... Args>
-	T& Entity::AddComponent(Args&&... args)
+	auto Entity::AddComponent(Args&&... args) -> T&
 	{
 		return m_Scene->AddComponent<T>(m_EntityHandle,std::forward<Args>(args)...);
 	}

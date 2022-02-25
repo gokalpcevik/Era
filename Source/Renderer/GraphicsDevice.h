@@ -26,21 +26,21 @@ namespace Era
         GraphicsDevice();
         ~GraphicsDevice() = default;
 
-        [[nodiscard]] const std::shared_ptr<DeviceContext>& GetDeviceContext() const { return m_pDeviceContext; }
-        [[nodiscard]] const ComPtr<ID3D11Device>& GetD3D11Device() const { return m_pDeviceD3D; }
-        [[nodiscard]] const ComPtr<ID3D11Device3>& GetD3D11Device3() const { return m_pDevice3D3D; }
-        [[nodiscard]] const ComPtr<ID3D11DeviceContext>& GetD3D11DeviceContext() const { return m_pDeviceContextD3D; }
+        [[nodiscard]] auto GetDeviceContext() const -> const std::shared_ptr<DeviceContext>& { return m_pDeviceContext; }
+        [[nodiscard]] auto GetD3D11Device() const -> const ComPtr<ID3D11Device>& { return m_pDeviceD3D; }
+        [[nodiscard]] auto GetD3D11Device3() const -> const ComPtr<ID3D11Device3>& { return m_pDevice3D3D; }
+        [[nodiscard]] auto GetD3D11DeviceContext() const -> const ComPtr<ID3D11DeviceContext>& { return m_pDeviceContextD3D; }
         template<typename T>
-        [[nodiscard]] std::shared_ptr<VertexBuffer<T>> CreateVertexBuffer(T* vertices,uint32_t size) const;
-        [[nodiscard]] std::shared_ptr<IndexBuffer> CreateIndexBuffer(uint32_t* indices, uint32_t size) const;
-        [[nodiscard]] std::shared_ptr<Texture2D> CreateTexture2D(std::wstring_view path) const;
-        [[nodiscard]] std::shared_ptr<InputLayout> CreateInputLayout(
+        [[nodiscard]] auto CreateVertexBuffer(T* vertices,uint32_t size) const -> std::shared_ptr<VertexBuffer<T>>;
+        [[nodiscard]] auto CreateIndexBuffer(uint32_t* indices, uint32_t size) const -> std::shared_ptr<IndexBuffer>;
+        [[nodiscard]] auto CreateTexture2D(std::wstring_view path) const -> std::shared_ptr<Texture2D>;
+        [[nodiscard]] auto CreateInputLayout(
             const D3D11_INPUT_ELEMENT_DESC* elements,
             uint32_t size,
             const void* pShaderBytecodeWithInputSignature,
-            size_t byteCodeLength) const;
-        [[nodiscard]] VertexShaderRef CreateVertexShader(std::wstring_view path) const;
-        [[nodiscard]] PixelShaderRef CreatePixelShader(std::wstring_view path) const;
+            size_t byteCodeLength) const -> std::shared_ptr<InputLayout>;
+        [[nodiscard]] auto CreateVertexShader(std::wstring_view path) const -> VertexShaderRef;
+        [[nodiscard]] auto CreatePixelShader(std::wstring_view path) const -> PixelShaderRef;
 	private:
         ComPtr<ID3D11Device> m_pDeviceD3D = nullptr;
         ComPtr<ID3D11Device3> m_pDevice3D3D = nullptr;
@@ -49,7 +49,7 @@ namespace Era
     };
 
     template <typename T>
-    std::shared_ptr<VertexBuffer<T>> GraphicsDevice::CreateVertexBuffer(T* vertices, uint32_t size) const
+    auto GraphicsDevice::CreateVertexBuffer(T* vertices, uint32_t size) const -> std::shared_ptr<VertexBuffer<T>>
     {
         return std::make_shared<VertexBuffer<T>>(m_pDevice3D3D.Get(), vertices, size);
     }

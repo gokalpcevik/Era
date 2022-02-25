@@ -28,12 +28,12 @@ namespace Era
 		SDL_DestroyWindow(m_window);
 	}
 
-	int Window::PollEvents()
+	auto Window::PollEvents() -> int
 	{
 		return SDL_PollEvent(&m_event);
 	}
 
-	uint32_t Window::GetWidth() const
+	auto Window::GetWidth() const -> uint32_t
 	{
 		int w = 0;
 		int h = 0;
@@ -41,19 +41,19 @@ namespace Era
 		return w;
 	}
 
-	uint32_t Window::GetSurfaceWidth() const
+	auto Window::GetSurfaceWidth() const -> uint32_t
 	{
 		auto* surface = SDL_GetWindowSurface(m_window);
 		return surface->w;
 	}
 
-	uint32_t Window::GetSurfaceHeight() const
+	auto Window::GetSurfaceHeight() const -> uint32_t
 	{
 		auto* surface = SDL_GetWindowSurface(m_window);
 		return surface->h;
 	}
 
-	uint32_t Window::GetHeight() const
+	auto Window::GetHeight() const -> uint32_t
 	{
 		int h = 0;
 		int w = 0;
@@ -61,7 +61,7 @@ namespace Era
 		return h;
 	}
 
-	HWND Window::GetWin32WindowHandle() const
+	auto Window::GetWin32WindowHandle() const -> HWND
 	{
 		SDL_SysWMinfo info;
 		SDL_VERSION(&info.version);
@@ -70,8 +70,8 @@ namespace Era
 		return hwnd;
 	}
 
-	bool Window::IsNullPtr() const
-    {
+	auto Window::IsNullPtr() const -> bool
+	{
         return m_window == nullptr;
     }
 }
