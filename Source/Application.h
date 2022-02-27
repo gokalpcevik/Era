@@ -42,6 +42,7 @@ namespace Era
 
         Entity camera;
         Entity box;
+        Entity box2;
     };
 }
 

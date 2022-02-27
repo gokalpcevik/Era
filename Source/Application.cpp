@@ -31,8 +31,14 @@ namespace Era
         DX::XMStoreFloat4(&box.GetComponent<TransformComponent>().Rotation, rot);
         box.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
 
+        box2 = m_Scene->CreateEntity();
+        box2.AddComponent<TransformComponent>().Translation = { 3.0f,0.0f,+5.0f };
+        DX::XMStoreFloat4(&box2.GetComponent<TransformComponent>().Rotation, rot);
+        box2.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
+
         MeshAsset meshAsset("Assets/monkey.fbx",0);
         box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(),meshAsset );
+        box2.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), meshAsset);
         return Update();
     }
 

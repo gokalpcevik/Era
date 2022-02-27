@@ -3,9 +3,9 @@
 //
 
 #pragma once
-#include <Windows.h>
+#include "../MinWindows.h"
+
 #include "../Log.h"
-#include "dxerr.h"
 #include <iostream>
 #define DX_RESULT(HR) Era::ErrorChecker::CheckLine_File(HR,__LINE__,__FILE__)
 

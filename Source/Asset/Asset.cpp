@@ -13,6 +13,11 @@ namespace Era
 		return m_Path;
 	}
 
+	auto Asset::GetFileName() -> std::filesystem::path
+	{
+		return m_Path.filename();
+	}
+
 	auto Asset::GetExtension() -> std::filesystem::path
 	{
 		return m_Extension;

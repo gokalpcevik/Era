@@ -7,9 +7,9 @@ target_sources(Era PRIVATE
         Texture2D.cpp
         InputLayout.cpp
         Shader.cpp
+        ShaderLibrary.cpp
         Renderer.cpp
         InfoQueue.cpp
         ErrorChecker.cpp
-        dxerr.cpp
         ConstantBuffer.cpp
         SamplerState.cpp)

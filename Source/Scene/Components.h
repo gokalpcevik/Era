@@ -9,6 +9,7 @@
 #include "../Renderer/VertexBuffer.h"
 #include "../Renderer/IndexBuffer.h"
 #include "../Renderer/Shader.h"
+#include "../Renderer/ShaderLibrary.h"
 #include "../Renderer/InputLayout.h"
 #include <Windows.h>
 
@@ -19,8 +20,12 @@ namespace Era
 	struct TransformComponent
 	{
 		TransformComponent() = default;
-		TransformComponent(DX::XMFLOAT3 Translation, DX::XMFLOAT4 Rotation, DX::XMFLOAT3 Scale)
-			: Translation(Translation), Rotation(Rotation) , Scale(Scale) {}
+		TransformComponent(const DX::XMVECTOR& Translation, const DX::XMVECTOR& Rotation,const DX::XMVECTOR& Scale)
+		{
+			DX::XMStoreFloat3(&this->Translation, Translation);
+			DX::XMStoreFloat4(&this->Rotation, Rotation);
+			DX::XMStoreFloat3(&this->Scale, Scale);
+		}
 
 		[[nodiscard]] auto GetTransform() const -> DX::XMMATRIX
 		{
@@ -47,6 +52,11 @@ namespace Era
 		[[nodiscard]] auto GetViewProjection() const -> DX::XMMATRIX
 		{
 			return m_ViewMatrix * m_ProjectionMatrix;
+		}
+
+		[[nodiscard]] auto IsPrimary() const -> bool
+		{
+			return m_IsPrimary;
 		}
 
 		auto GetAspectRatio() const -> float
@@ -102,10 +112,7 @@ namespace Era
 			m_ProjectionType = type; RecalculateProjection();
 		}
 
-		auto IsPrimary() const -> bool
-		{
-			return m_IsPrimary;
-		}
+		
 
 	private:
 		bool m_IsPrimary = true;
@@ -153,8 +160,8 @@ namespace Era
 			DX::XMFLOAT4 Color{1.0f,1.0f,1.0f,1.0f};
 		};
 
-		[[nodiscard]] const VertexBufferRef<Vertex>& GetVertexBuffer() const { return m_VertexBuffer; }
-		[[nodiscard]] const ConstantBufferRef<VSConstantBufferData>& GetConstantBuffer() const { return m_VSConstantBuffer; }
+		[[nodiscard]] auto GetVertexBuffer() const -> const VertexBufferRef<Vertex>& { return m_VertexBuffer; }
+		[[nodiscard]] auto GetConstantBuffer() const -> const ConstantBufferRef<VSConstantBufferData>& { return m_VSConstantBuffer; }
 		[[nodiscard]] auto GetIndexBuffer() const -> const IndexBufferRef& { return m_IndexBuffer; }
 		[[nodiscard]] auto GetVertexShader() const -> const VertexShaderRef& { return m_VertexShader; }
 		[[nodiscard]] auto GetPixelShader() const -> const PixelShaderRef& { return m_PixelShader; }
@@ -169,6 +176,8 @@ namespace Era
 			m_VSConstantBufferData.WorldViewProjection = WorldViewProjection;
 			m_VSConstantBuffer->Update(pContext, m_VSConstantBufferData);
 		}
+
+		void SetColor(ID3D11DeviceContext* pContext, const DX::XMVECTOR& color);
 
 	private:
 		void InitializePipelineObjects(ID3D11Device* pDevice, const MeshAsset& meshAsset)
@@ -187,14 +196,55 @@ namespace Era
 				{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 			};
 
-			m_VertexShader     = std::make_shared<VertexShader>(pDevice, "Shaders/Unlit.vshader");
-			if(m_VertexShader->GetBlob())
+			const std::filesystem::path VSPath = "Shaders/unlit.vshader";
+			const std::filesystem::path PSPath = "Shaders/unlit.pshader";
+
+			ShaderBlob VSBlob{nullptr,nullptr,ShaderType::Vertex};
+			ShaderBlob PSBlob{nullptr,nullptr,ShaderType::Pixel};
+			if(!ShaderLibrary::Exists(VSPath))
+			{
+				DX_RESULT(CompileShader(&VSBlob.Blob, &VSBlob.ErrorBlob, VSPath , "vs_5_0"));
+				if(VSBlob.ErrorBlob)
+				{
+					ERA_ERROR("Error while compiling shader {0} \n {1}", VSPath.string(),
+					          reinterpret_cast<const char*>(VSBlob.ErrorBlob->GetBufferPointer()));
+				}
+				else if(VSBlob.Blob)
+				{
+					ShaderLibrary::AddShader(VSPath, VSBlob);
+				}
+			}
+			else
+			{
+				VSBlob = ShaderLibrary::GetShaderBlob(VSPath);
+			}
+
+			if (!ShaderLibrary::Exists(PSPath))
+			{
+				DX_RESULT(CompileShader(&PSBlob.Blob, &PSBlob.ErrorBlob, PSPath, "ps_5_0"));
+				if (PSBlob.ErrorBlob)
+				{
+					ERA_ERROR("Error while compiling shader {0} \n {1}", PSPath.string(),
+					          reinterpret_cast<const char*>(PSBlob.ErrorBlob->GetBufferPointer()));
+					ShaderLibrary::AddShader(PSPath, PSBlob);
+				}
+			}
+			else
+			{
+				PSBlob = ShaderLibrary::GetShaderBlob(PSPath);
+			}
+
+			m_VertexShader     = std::make_shared<VertexShader>(pDevice, VSBlob);
+#pragma warning(push)
+#pragma warning(disable:4267)
+			if(m_VertexShader->GetBufferPointer())
 				m_InputLayout      = std::make_shared<InputLayout>(pDevice, elems, _countof(elems),
-			                                              m_VertexShader->GetBlob()->GetBufferPointer()
-			                                              , m_VertexShader->GetBlob()->GetBufferSize());
-			m_PixelShader      = std::make_shared<PixelShader>(pDevice, "Shaders/Unlit.pshader");
+			                                              m_VertexShader->GetBufferPointer()
+			                                              , m_VertexShader->GetBufferSize());
+			m_PixelShader      = std::make_shared<PixelShader>(pDevice, PSBlob);
 			m_VertexBuffer     = std::make_shared<VertexBuffer<Vertex>>(pDevice, vertices.data(), vertices.size());
 			m_IndexBuffer	   = std::make_shared<IndexBuffer>(pDevice, meshAsset.GetIndices().data(), meshAsset.GetNumIndices());
+#pragma warning(pop)
 			m_VSConstantBuffer = std::make_shared<ConstantBuffer<VSConstantBufferData>>(pDevice, m_VSConstantBufferData, ConstantBufferType::Vertex);
 		}
 	private:
@@ -205,5 +255,10 @@ namespace Era
 		InputLayoutRef m_InputLayout;
 		ConstantBufferRef<VSConstantBufferData> m_VSConstantBuffer{};
 		VSConstantBufferData m_VSConstantBufferData{};
+	};
+
+	struct PointLightComponent
+	{
+		
 	};
 }
