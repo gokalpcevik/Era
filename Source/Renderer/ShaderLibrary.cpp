@@ -6,8 +6,7 @@ namespace Era
 
 	void ShaderLibrary::AddShader(const std::filesystem::path& shaderFilePath, ShaderBlob blob)
 	{
-		if (m_ShaderNameToShaderBlob.find(shaderFilePath.filename().string()) == m_ShaderNameToShaderBlob.end())
-			m_ShaderNameToShaderBlob[shaderFilePath.filename().string()] = blob;
+		m_ShaderNameToShaderBlob[shaderFilePath.filename().string()] = blob;
 	}
 
 	auto ShaderLibrary::RemoveShader(const std::filesystem::path& shaderFilePath) -> bool
