@@ -15,8 +15,5 @@ namespace Era
 		[[nodiscard]] virtual auto HasExtension() -> bool;
 	protected:
 		std::filesystem::path m_Path{};
-		std::filesystem::path m_FileName{};
-		std::filesystem::path m_Extension{};
-		bool m_HasExtension{true};
 	};
 }

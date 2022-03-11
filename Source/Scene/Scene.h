@@ -26,6 +26,10 @@ namespace Era
 
 		template<typename T>
 		auto RemoveComponent(entt::entity entity) -> void;
+
+		template<typename T>
+		auto RemoveComponentIfExists(entt::entity entity) -> void;
+
 	private:
 		auto OnResize(uint32_t width, uint32_t height) -> void;
 	private:
@@ -47,5 +51,11 @@ namespace Era
 	auto Scene::RemoveComponent(entt::entity entity) -> void
 	{
 		m_Registry.remove<T>(entity);
+	}
+
+	template <typename T>
+	auto Scene::RemoveComponentIfExists(entt::entity entity) -> void
+	{
+		m_Registry.remove_if_exists<T>(entity);
 	}
 }

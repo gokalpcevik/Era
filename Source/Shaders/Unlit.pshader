@@ -1,8 +1,12 @@
+Texture2D g_Texture;
+SamplerState g_TextureSampler;
+
 struct PSInput
 {
     float4 Position   : SV_POSITION;
+    float3 Normal : NORMAL;
+    float2 UV : UV;
     float4 Color : COLOR;
-    float4 Normal : NORMAL;
 };
 struct PSOutput
 {
@@ -11,5 +15,5 @@ struct PSOutput
 void main(in  PSInput  PSIn,
     out PSOutput PSOut)
 {
-    PSOut.Color = PSIn.Color;
+    PSOut.Color = g_Texture.Sample(g_TextureSampler,PSIn.UV) * PSIn.Color;
 }

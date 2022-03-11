@@ -13,6 +13,11 @@ namespace Era
 	{
 		if (m_ShaderNameToShaderBlob.find(shaderFilePath.filename().string()) != m_ShaderNameToShaderBlob.end())
 		{
+			m_ShaderNameToShaderBlob[shaderFilePath].Blob->Release();
+			if (m_ShaderNameToShaderBlob[shaderFilePath].ErrorBlob)
+			{
+				m_ShaderNameToShaderBlob[shaderFilePath].ErrorBlob->Release();
+			}
 			m_ShaderNameToShaderBlob.erase(shaderFilePath.filename().string());
 			return true;
 		}

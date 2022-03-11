@@ -29,6 +29,7 @@ namespace Era
 		auto cameraView = m_Registry.view<CameraComponent>();
 
 		CameraComponent* pCamera = nullptr;
+		DirectionalLightComponent* pDirectionalLight = nullptr;
 
 		for(auto const entity : cameraView)
 		{
@@ -37,14 +38,38 @@ namespace Era
 				pCamera = &cc;
 		}
 
+		auto dlcView = m_Registry.view<DirectionalLightComponent>();
+		for(auto const entity : dlcView)
+		{
+			pDirectionalLight = &m_Registry.get<DirectionalLightComponent>(entity);
+			break;
+		}
+		
 		auto const meshView = m_Registry.view<MeshRendererComponent, TransformComponent>();
 
+		auto* pContext = m_Renderer->GetGraphicsDevice()->GetD3D11DeviceContext().Get();
 		for (auto const entity : meshView)
 		{
 			auto&& [mrc, tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
 			if(pCamera)
-				mrc.SetWorldViewProjection(m_Renderer->GetGraphicsDevice()->GetD3D11DeviceContext().Get(),
+				mrc.SetWorldViewProjection(pContext,
 			                           DX::XMMatrixTranspose(tc.GetTransform() * pCamera->GetViewProjection()));
+			mrc.SetWorld(pContext,DX::XMMatrixTranspose(tc.GetTransform()));
+
+			if(pDirectionalLight)
+			{
+				MeshRendererComponent::PSConstantBufferData data{};
+				DX::XMStoreFloat4(&data.CameraPosition, pCamera->GetCameraPosition());
+				data.LightDirection = pDirectionalLight->LightDirection;
+				data.AmbientLightColor = pDirectionalLight->AmbientLightColor;
+				data.AmbientCoefficient = pDirectionalLight->AmbientCoefficient;
+				data.DiffuseLightColor = pDirectionalLight->DiffuseLightColor;
+				data.DiffuseCoefficient = pDirectionalLight->DiffuseCoefficient;
+				data.SpecularLightColor = pDirectionalLight->SpecularLightColor;
+				data.SpecularCoefficient = pDirectionalLight->SpecularCoefficient;
+				data.Shininess = pDirectionalLight->Shininess;
+				mrc.UpdateLightData(pContext, data);
+			}
 			m_Renderer->DrawMesh(mrc);
 		}
 	}

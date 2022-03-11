@@ -14,7 +14,7 @@ add_executable("Era"
         Application.cpp
         Window.cpp
         Main.cpp
-         "MinWindows.h")
+        )
 
 add_subdirectory(Renderer)
 add_subdirectory(Scene)

@@ -64,11 +64,14 @@ namespace Era
 	    ID3D11DeviceContext* pContext = m_DeviceContext->GetD3D11DeviceContext().Get();
         mrc.GetVertexBuffer()->Bind(pContext);
         mrc.GetIndexBuffer()->Bind(pContext);
-        mrc.GetConstantBuffer()->Bind(pContext);
-        mrc.GetPixelShader()->Bind(pContext);
+	    mrc.GetPixelShader()->Bind(pContext);
+	    mrc.GetVSConstantBuffer()->Bind(pContext);
+	    mrc.GetPSConstantBuffer()->Bind(pContext);
+        mrc.GetSamplerState()->Bind(pContext);
+        mrc.GetTexture2D()->BindToPixelShader(pContext);
         mrc.GetVertexShader()->Bind(pContext);
         mrc.GetInputLayout()->Bind(pContext);
-        MeshRendererComponent::SetPrimitiveTopology(pContext);
+        pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(), 0, 0);
     }
 

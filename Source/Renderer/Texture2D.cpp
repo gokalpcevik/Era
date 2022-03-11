@@ -7,7 +7,7 @@ namespace Era
 		DX_RESULT(DirectX::CreateWICTextureFromFile(pDevice, path.c_str(), &m_pResource, &m_pSRV));
 	}
 
-	void Texture2D::PSSetShaderResources(ID3D11DeviceContext* pContext)
+	void Texture2D::BindToPixelShader(ID3D11DeviceContext* pContext)
 	{
 		pContext->PSSetShaderResources(0u, 1u, m_pSRV.GetAddressOf());
 	}

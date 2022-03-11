@@ -59,10 +59,6 @@ namespace Era
 	{
 		if (m_ShaderBlob.Blob)
 			DX_RESULT(pDevice->CreateVertexShader(m_ShaderBlob.Blob->GetBufferPointer(), m_ShaderBlob.Blob->GetBufferSize(), nullptr, &m_pShader));
-		else if (m_ShaderBlob.ErrorBlob)
-		{
-			ERA_ERROR("Error while compiling shader {0} \n {1}", m_Path.string(), reinterpret_cast<const char*>(m_ShaderBlob.ErrorBlob->GetBufferPointer()));
-		}
 	}
 
 	VertexShader::~VertexShader()
@@ -93,10 +89,6 @@ namespace Era
 	{
 		if (m_ShaderBlob.Blob)
 			DX_RESULT(pDevice->CreatePixelShader(m_ShaderBlob.Blob->GetBufferPointer(), m_ShaderBlob.Blob->GetBufferSize(), nullptr, &m_pShader));
-		else if (m_ShaderBlob.ErrorBlob)
-		{
-			ERA_ERROR("Error while compiling shader {0} \n {1}", m_Path.string(), reinterpret_cast<const char*>(m_ShaderBlob.ErrorBlob->GetBufferPointer()));
-		}
 	}
 
 	PixelShader::~PixelShader()

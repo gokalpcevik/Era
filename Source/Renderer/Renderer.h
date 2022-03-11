@@ -10,9 +10,11 @@
 #include "SwapChain.h"
 #include "InfoQueue.h"
 #include "../Scene/Components.h"
+#include "../Scene/MeshRendererComponent.h"
 
 namespace Era
 {
+
     class Window;
     using Microsoft::WRL::ComPtr;
     class Renderer

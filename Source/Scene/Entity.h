@@ -19,6 +19,9 @@ namespace Era
 		template<typename T>
 		void RemoveComponent();
 
+		template<typename T>
+		void RemoveComponentIfExists() const;
+
 		operator entt::entity() const
 		{
 			return m_EntityHandle;
@@ -43,5 +46,11 @@ namespace Era
 	void Entity::RemoveComponent()
 	{
 		m_Scene->RemoveComponent<T>(m_EntityHandle);
+	}
+
+	template <typename T>
+	void Entity::RemoveComponentIfExists() const
+	{
+		m_Scene->RemoveComponentIfExists<T>(m_EntityHandle);
 	}
 }

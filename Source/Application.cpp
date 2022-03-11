@@ -8,6 +8,7 @@ namespace Era
 {
 	auto Application::Start() -> int
 	{
+        HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
         Log::Init();
         uint32_t w = 1600;
         uint32_t h = 900;
@@ -17,32 +18,43 @@ namespace Era
         ERA_INFO("Created a window with the following size: {}x{}",w,h);
         m_Scene = std::make_shared<Scene>(GetRenderer());
         camera = m_Scene->CreateEntity();
-        auto view = DX::XMMatrixLookAtLH(DX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), DX::XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f), DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+        auto view = DX::XMMatrixLookAtLH(DX::XMVectorSet(0.0f, 0.0f, +1.0f, 1.0f), DX::XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f), DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
         auto&& cc = camera.AddComponent<CameraComponent>(ProjectionType::Perspective, (float)m_Window->GetWidth() / (float)m_Window->GetHeight());
-        cc.SetPerspectiveHalfAngleFOV(45.0f);
+		cc.SetPerspectiveHalfAngleFOV(45.0f);
         cc.SetViewMatrix(view);
         cc.SetPerspectiveFar(500.0f);
         cc.SetPerspectiveNear(0.1f);
         cc.SetAspectRatio((float)m_Window->GetWidth() / (float)m_Window->GetHeight());
-        box = m_Scene->CreateEntity();
+
+        directionalLight = m_Scene->CreateEntity();
+        auto&& dlc = directionalLight.AddComponent<DirectionalLightComponent>();
+        dlc.LightDirection = { -0.1f,-1.0f,0.0f,1.0f };
+        dlc.SpecularLightColor = { 1.0f,1.0f,1.0f,1.0f };
+        dlc.SpecularCoefficient = 0.5f;
+		dlc.DiffuseCoefficient = 0.3f;
+        dlc.DiffuseLightColor = { 1.0f,1.0f,1.0f,1.0f };
+        dlc.AmbientCoefficient = 0.08f;
+        dlc.AmbientLightColor = { 1.0f,1.0f,1.0f,1.0f };
+        dlc.Shininess = 100.0f;
+		box = m_Scene->CreateEntity();
         box.AddComponent<TransformComponent>().Translation = { 0.0f,0.0f,+5.0f };
         DX::XMVECTOR rot = DX::XMQuaternionRotationRollPitchYaw(45.0f,0.0f,0.0f);
         DX::XMStoreFloat4(&box.GetComponent<TransformComponent>().Rotation, rot);
         box.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
 
         box2 = m_Scene->CreateEntity();
-        box2.AddComponent<TransformComponent>().Translation = { 3.0f,0.0f,+5.0f };
+        box2.AddComponent<TransformComponent>().Translation = { 1.5f,0.0f,+5.0f };
         DX::XMStoreFloat4(&box2.GetComponent<TransformComponent>().Rotation, rot);
         box2.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
 
-        MeshAsset meshAsset("Assets/monkey.fbx",0);
-        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(),meshAsset );
-        box2.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), meshAsset);
+        //CreateMeshes();
+        m_CreateMeshesFuture = std::async(std::launch::async,&Application::CreateMeshes,this);
+
         return Update();
     }
 
-	auto Application::Update() const -> int
+	auto Application::Update() -> int
 	{
         while (m_Running)
         {
@@ -71,13 +83,26 @@ namespace Era
                 }
             }
             m_Scene->Update();
-            constexpr float color[] = { 0.15f,0.15f,0.15f,1.0f };
+            static float x = 0.01f;
+            x += 0.01f;
+            yaw = std::cos(x);
+            directionalLight.GetComponent<DirectionalLightComponent>().LightDirection = { yaw,-0.75f,0.0f,1.0f };
+
+            constexpr float color[] = { 0.1f,0.1f,0.1f,1.0f };
             GetRenderer()->Clear(color);
             m_Scene->Draw();
             GetRenderer()->Present(1, 0);
         }
         return 0;
     }
+
+	void Application::CreateMeshes()
+	{
+        std::lock_guard lock(m_CreateMeshesMutex);
+        MeshAsset meshAsset("Assets/high_poly_monkey.fbx", 0);
+        meshAsset.Import();
+        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), meshAsset);
+	}
 
 	auto Application::Get() -> Application&
 	{

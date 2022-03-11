@@ -49,6 +49,11 @@ namespace Era
 			: m_ProjectionType(projectionType),m_AspectRatio(aspectRatio)
 		{}
 
+		[[nodiscard]] auto GetCameraPosition() const -> DX::XMVECTOR
+		{
+			return m_InvViewMatrix.r[3];
+		}
+
 		[[nodiscard]] auto GetViewProjection() const -> DX::XMMATRIX
 		{
 			return m_ViewMatrix * m_ProjectionMatrix;
@@ -81,6 +86,7 @@ namespace Era
 		void SetViewMatrix(const DX::XMMATRIX& view)
 		{
 			m_ViewMatrix = view;
+			m_InvViewMatrix = DX::XMMatrixInverse(nullptr, m_ViewMatrix);
 		}
 
 		void SetPerspectiveHalfAngleFOV(float fov)
@@ -112,18 +118,17 @@ namespace Era
 			m_ProjectionType = type; RecalculateProjection();
 		}
 
-		
-
 	private:
 		bool m_IsPrimary = true;
 		ProjectionType m_ProjectionType = ProjectionType::Perspective;
 		float m_PerspectiveFOV = 60.0f;
 		float m_PerspectiveNear = 0.01f, m_PerspectiveFar = 1000.0f;
-		float m_OrthoWidth = 1600.0f;
-		float m_OrthoHeight = 900.0f;
-		float m_OrthographicNear = 0.02f, m_OrthographicFar = 1.0f;
+		float m_OrthoWidth = 16.f;
+		float m_OrthoHeight = 9.f;
+		float m_OrthographicNear = 0.02f, m_OrthographicFar = 20.0f;
 		float m_AspectRatio = 1.0f;
 		DX::XMMATRIX m_ViewMatrix = DX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+		DX::XMMATRIX m_InvViewMatrix = DX::XMMatrixIdentity();
 		DX::XMMATRIX m_ProjectionMatrix = DX::XMMatrixPerspectiveLH(40.f, 40.f, 0.1f, 5000.0f);
 	private:
 		void RecalculateProjection()
@@ -139,126 +144,15 @@ namespace Era
 		}
 	};
 
-	struct MeshRendererComponent
+	struct DirectionalLightComponent
 	{
-		MeshRendererComponent(ID3D11Device* pDevice,const MeshAsset& meshAsset)
-		{
-			InitializePipelineObjects(pDevice,meshAsset);
-		}
-
-		struct Vertex
-		{
-			Vertex(DX::XMFLOAT3 Position,DX::XMFLOAT3 Normal) : Position(Position) , Normal(Normal) {}
-
-			DX::XMFLOAT3 Position{};
-			DX::XMFLOAT3 Normal{};
-		};
-
-		struct VSConstantBufferData
-		{
-			DX::XMMATRIX WorldViewProjection{};
-			DX::XMFLOAT4 Color{1.0f,1.0f,1.0f,1.0f};
-		};
-
-		[[nodiscard]] auto GetVertexBuffer() const -> const VertexBufferRef<Vertex>& { return m_VertexBuffer; }
-		[[nodiscard]] auto GetConstantBuffer() const -> const ConstantBufferRef<VSConstantBufferData>& { return m_VSConstantBuffer; }
-		[[nodiscard]] auto GetIndexBuffer() const -> const IndexBufferRef& { return m_IndexBuffer; }
-		[[nodiscard]] auto GetVertexShader() const -> const VertexShaderRef& { return m_VertexShader; }
-		[[nodiscard]] auto GetPixelShader() const -> const PixelShaderRef& { return m_PixelShader; }
-		[[nodiscard]] auto GetInputLayout() const -> const InputLayoutRef& { return m_InputLayout; }
-
-		static void SetPrimitiveTopology(ID3D11DeviceContext* pContext)
-		{
-			pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		}
-		void SetWorldViewProjection(ID3D11DeviceContext* pContext,const DX::XMMATRIX& WorldViewProjection)
-		{
-			m_VSConstantBufferData.WorldViewProjection = WorldViewProjection;
-			m_VSConstantBuffer->Update(pContext, m_VSConstantBufferData);
-		}
-
-		void SetColor(ID3D11DeviceContext* pContext, const DX::XMVECTOR& color);
-
-	private:
-		void InitializePipelineObjects(ID3D11Device* pDevice, const MeshAsset& meshAsset)
-		{
-			std::vector<Vertex> vertices{};
-			vertices.reserve(meshAsset.GetNumVertices());
-			for(size_t i = 0; i < meshAsset.GetNumVertices(); ++i)
-			{
-				DX::XMFLOAT3 Pos{ meshAsset.GetVertexPositions()[i].x ,meshAsset.GetVertexPositions()[i].y ,meshAsset.GetVertexPositions()[i].z };
-				DX::XMFLOAT3 Normal{ meshAsset.GetVertexNormals()[i].x,meshAsset.GetVertexNormals()[i].y,meshAsset.GetVertexNormals()[i].z };
-				vertices.emplace_back(Pos, Normal);
-			}
-			constexpr D3D11_INPUT_ELEMENT_DESC elems[] =
-			{
-				{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-				{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
-			};
-
-			const std::filesystem::path VSPath = "Shaders/unlit.vshader";
-			const std::filesystem::path PSPath = "Shaders/unlit.pshader";
-
-			ShaderBlob VSBlob{nullptr,nullptr,ShaderType::Vertex};
-			ShaderBlob PSBlob{nullptr,nullptr,ShaderType::Pixel};
-			if(!ShaderLibrary::Exists(VSPath))
-			{
-				DX_RESULT(CompileShader(&VSBlob.Blob, &VSBlob.ErrorBlob, VSPath , "vs_5_0"));
-				if(VSBlob.ErrorBlob)
-				{
-					ERA_ERROR("Error while compiling shader {0} \n {1}", VSPath.string(),
-					          reinterpret_cast<const char*>(VSBlob.ErrorBlob->GetBufferPointer()));
-				}
-				else if(VSBlob.Blob)
-				{
-					ShaderLibrary::AddShader(VSPath, VSBlob);
-				}
-			}
-			else
-			{
-				VSBlob = ShaderLibrary::GetShaderBlob(VSPath);
-			}
-
-			if (!ShaderLibrary::Exists(PSPath))
-			{
-				DX_RESULT(CompileShader(&PSBlob.Blob, &PSBlob.ErrorBlob, PSPath, "ps_5_0"));
-				if (PSBlob.ErrorBlob)
-				{
-					ERA_ERROR("Error while compiling shader {0} \n {1}", PSPath.string(),
-					          reinterpret_cast<const char*>(PSBlob.ErrorBlob->GetBufferPointer()));
-					ShaderLibrary::AddShader(PSPath, PSBlob);
-				}
-			}
-			else
-			{
-				PSBlob = ShaderLibrary::GetShaderBlob(PSPath);
-			}
-
-			m_VertexShader     = std::make_shared<VertexShader>(pDevice, VSBlob);
-#pragma warning(push)
-#pragma warning(disable:4267)
-			if(m_VertexShader->GetBufferPointer())
-				m_InputLayout      = std::make_shared<InputLayout>(pDevice, elems, _countof(elems),
-			                                              m_VertexShader->GetBufferPointer()
-			                                              , m_VertexShader->GetBufferSize());
-			m_PixelShader      = std::make_shared<PixelShader>(pDevice, PSBlob);
-			m_VertexBuffer     = std::make_shared<VertexBuffer<Vertex>>(pDevice, vertices.data(), vertices.size());
-			m_IndexBuffer	   = std::make_shared<IndexBuffer>(pDevice, meshAsset.GetIndices().data(), meshAsset.GetNumIndices());
-#pragma warning(pop)
-			m_VSConstantBuffer = std::make_shared<ConstantBuffer<VSConstantBufferData>>(pDevice, m_VSConstantBufferData, ConstantBufferType::Vertex);
-		}
-	private:
-		VertexBufferRef<Vertex> m_VertexBuffer{};
-		IndexBufferRef m_IndexBuffer;
-		VertexShaderRef m_VertexShader;
-		PixelShaderRef m_PixelShader;
-		InputLayoutRef m_InputLayout;
-		ConstantBufferRef<VSConstantBufferData> m_VSConstantBuffer{};
-		VSConstantBufferData m_VSConstantBufferData{};
-	};
-
-	struct PointLightComponent
-	{
-		
+		DX::XMFLOAT4 LightDirection{ 0.0f,0.0f,1.0f,1.0f }; //16
+		DX::XMFLOAT4 AmbientLightColor{ 1.0f,1.0f,1.0f,1.0f }; //12
+		DX::XMFLOAT4 DiffuseLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
+		DX::XMFLOAT4 SpecularLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
+		float AmbientCoefficient = 0.08f; //4
+		float DiffuseCoefficient = 0.6f; //4
+		float SpecularCoefficient = 0.7f; //4
+		float Shininess = 400.0f;
 	};
 }

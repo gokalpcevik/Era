@@ -1,0 +1,58 @@
+Texture2D g_Texture;
+SamplerState g_TextureSampler;
+
+struct DirectionalLight
+{
+    float4 LightDirection; // 16
+    float4 AmbientLightColor; // 12 
+    float4 DiffuseLightColor; // 12
+    float4 SpecularLightColor; // 12 
+    float AmbientCoefficient; // 4
+    float DiffuseCoefficient; // 4
+    float SpecularCoefficient; // 4
+    float Shininess;
+};
+
+cbuffer LitCBuf
+{
+    float4 CameraPosition;
+    DirectionalLight light;
+};
+
+struct PSInput
+{
+    float4 Position : SV_Position;
+    float4 WorldPosition : WORLD_POSITION;
+    float3 Normal : NORMAL;
+    float2 UV : UV;
+    float4 Color : COLOR;
+    bool bUseSamplers : USESAMPLERS;
+};
+struct PSOutput
+{
+    float4 Color : SV_TARGET;
+};
+void main(in  PSInput  PSIn,
+    out PSOutput PSOut)
+{
+    //Ambient
+    float4 ambientLight = light.AmbientLightColor * light.AmbientCoefficient;
+    // Diffuse
+    float amountDiffuse = max(0.0,dot(normalize(light.LightDirection),float4(PSIn.Normal,1.0f)));
+    float4 diffuseLight = light.DiffuseCoefficient * amountDiffuse * light.DiffuseLightColor;
+    //Specular
+    float3 viewDirection = -(normalize(PSIn.WorldPosition - CameraPosition)).xyz;
+    float3 halfwayDir = normalize(light.LightDirection.xyz + viewDirection);
+    float amountSpecular = pow(max(0.0f,dot(halfwayDir,PSIn.Normal)),light.Shininess);
+    float4 specularLight = light.SpecularCoefficient * amountSpecular * light.SpecularLightColor;
+
+
+    if(PSIn.bUseSamplers)
+    {
+        PSOut.Color = saturate(g_Texture.Sample(g_TextureSampler,PSIn.UV) * (ambientLight + diffuseLight));
+    }
+    else
+    {
+        PSOut.Color = saturate(PSIn.Color * (ambientLight + diffuseLight + specularLight));
+    }
+}
