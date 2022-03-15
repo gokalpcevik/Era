@@ -1,5 +1,4 @@
 ﻿#include "MeshRendererComponent.h"
-#include "../Renderer/Renderer.h"
 
 namespace Era
 {
@@ -45,6 +44,13 @@ namespace Era
 		m_SamplerState = std::make_shared<SamplerState>(pDevice, samplerDesc, SamplerStateShaderType::Pixel);
 	}
 
+	MeshRendererComponent::MeshRendererComponent(ID3D11Device* pDevice, const MeshAsset& meshAsset,
+		const MaterialRef& material) : m_Material(material)
+	{
+		CreateVertexBuffer(pDevice, meshAsset);
+		CreateIndexBuffer(pDevice, meshAsset);
+	}
+
 	void MeshRendererComponent::SetWorldViewProjection(ID3D11DeviceContext* pContext,
 	                                                   const DX::XMMATRIX& WorldViewProjection)
 	{
@@ -58,7 +64,7 @@ namespace Era
 		m_VSConstantBuffer->Update(pContext, m_VSConstantBufferData);
 	}
 
-	void MeshRendererComponent::UpdateLightData(ID3D11DeviceContext* pContext, const PSConstantBufferData& data)
+	void MeshRendererComponent::UpdateLightData(ID3D11DeviceContext* pContext, const PSConstantBufferData& data) const
 	{
 		m_PSConstantBuffer->Update(pContext, data);
 	}
@@ -71,7 +77,7 @@ namespace Era
 		{
 			DX::XMFLOAT3 Pos{ meshAsset.GetVertexPositions()[i].x ,meshAsset.GetVertexPositions()[i].y ,meshAsset.GetVertexPositions()[i].z };
 			DX::XMFLOAT3 Normal{ meshAsset.GetVertexNormals()[i].x,meshAsset.GetVertexNormals()[i].y,meshAsset.GetVertexNormals()[i].z };
-			vertices.emplace_back(Pos, Normal, meshAsset.GetTextureCoordinates(0u)[i]);
+			vertices.emplace_back(Pos, Normal, meshAsset.GetTextureCoordinates(0u)[i],0);
 		}
 		m_VertexBuffer = std::make_shared<VertexBuffer<Vertex>>(pDevice, vertices.data(), vertices.size());
 	}
@@ -96,6 +102,7 @@ namespace Era
 			else if (VSBlob.Blob)
 			{
 				ShaderLibrary::AddShader(VSPath, VSBlob);
+				VertexLayout layout(VSBlob.Blob);
 			}
 		}
 		else
@@ -129,18 +136,23 @@ namespace Era
 
 	void MeshRendererComponent::CreateInputLayout(ID3D11Device* pDevice, const VertexShaderRef& vs)
 	{
-		constexpr D3D11_INPUT_ELEMENT_DESC elems[] =
+		/*constexpr D3D11_INPUT_ELEMENT_DESC elems[] =
 		{
 			{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
 			{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
 			{"UV",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}			  ,
-			{"USESAMPLERS",0,DXGI_FORMAT_R8_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
+			{"USE_TEXTURES",0,DXGI_FORMAT_R8_UINT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 		};
 
 		if (m_VertexShader->GetBufferPointer())
 			m_InputLayout = std::make_shared<InputLayout>(pDevice, elems, _countof(elems),
 				m_VertexShader->GetBufferPointer()
-				, m_VertexShader->GetBufferSize());
+				, m_VertexShader->GetBufferSize());*/
+
+		if(m_VertexShader)
+		{
+			m_InputLayout = std::make_shared<InputLayout>(pDevice, vs->m_ShaderBlob.Blob,VertexLayout(vs->m_ShaderBlob.Blob));
+		}
 	}
 
 	void MeshRendererComponent::CreateVertexShaderConstantBuffer(ID3D11Device* pDevice)

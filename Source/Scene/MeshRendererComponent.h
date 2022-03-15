@@ -9,6 +9,8 @@
 #include "../Renderer/InputLayout.h"
 #include "../Renderer/Texture2D.h"
 #include "../Renderer/SamplerState.h"
+#include "../Renderer/Material.h"
+#include "../Renderer/Layout.h"
 
 namespace Era
 {
@@ -20,6 +22,8 @@ namespace Era
 	public:
 		MeshRendererComponent(ID3D11Device* pDevice, const MeshAsset& meshAsset);
 		MeshRendererComponent(ID3D11Device* pDevice, const MeshAsset& meshAsset, const std::filesystem::path& texturePath);
+		MeshRendererComponent(ID3D11Device* pDevice, const MeshAsset& meshAsset, const MaterialRef& material);
+
 
 		[[nodiscard]] auto GetVertexBuffer() const -> const VertexBufferRef<Vertex>& { return m_VertexBuffer; }
 		[[nodiscard]] auto GetVSConstantBuffer() const -> const ConstantBufferRef<VSConstantBufferData>& { return m_VSConstantBuffer; }
@@ -33,7 +37,7 @@ namespace Era
 
 		void SetWorldViewProjection(ID3D11DeviceContext* pContext, const DX::XMMATRIX& WorldViewProjection);
 		void SetWorld(ID3D11DeviceContext* pContext, const DX::XMMATRIX& World);
-		void UpdateLightData(ID3D11DeviceContext* pContext, const PSConstantBufferData& data);
+		void UpdateLightData(ID3D11DeviceContext* pContext, const PSConstantBufferData& data) const;
 	private:
 		void CreateVertexBuffer(ID3D11Device* pDevice, const MeshAsset& meshAsset);
 		void CreateIndexBuffer(ID3D11Device* pDevice, const MeshAsset& meshAsset);
@@ -46,11 +50,12 @@ namespace Era
 		struct Vertex
 		{
 			Vertex(DX::XMFLOAT3 Position, DX::XMFLOAT3 Normal, DX::XMFLOAT2 UV) : Position(Position), Normal(Normal), UV(UV) {}
+			Vertex(DX::XMFLOAT3 Position, DX::XMFLOAT3 Normal, DX::XMFLOAT2 UV, uint32_t UseSamplers) : Position(Position), Normal(Normal), UV(UV) ,UseSamplers(UseSamplers){}
 
 			DX::XMFLOAT3 Position{};
 			DX::XMFLOAT3 Normal{};
 			DX::XMFLOAT2 UV{};
-			bool UseSamplers = false;
+			uint32_t UseSamplers = 0;
 		};
 
 		struct VSConstantBufferData
@@ -67,9 +72,6 @@ namespace Era
 			alignas(16) DX::XMFLOAT4 AmbientLightColor{ 1.0f,1.0f,1.0f,1.0f }; //12
 			alignas(16) DX::XMFLOAT4 DiffuseLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
 			alignas(16) DX::XMFLOAT4 SpecularLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
-			float AmbientCoefficient = 0.08f; //4
-			float DiffuseCoefficient = 0.6f; //4
-			float SpecularCoefficient = 1.0f; //4
 			float Shininess = 400.0f;
 		};
 
@@ -85,5 +87,6 @@ namespace Era
 		ConstantBufferRef<PSConstantBufferData> m_PSConstantBuffer{};
 		VSConstantBufferData m_VSConstantBufferData{};
 		PSConstantBufferData m_PSConstantBufferData{};
+		MaterialRef m_Material{};
 	};
 }

@@ -4,10 +4,19 @@
 #include <SDL2/SDL_syswm.h>
 #include <string_view>
 #include "Log.h"
-#include "Renderer/Renderer.h"
 
 namespace Era
 {
+	class Renderer;
+
+	class IWindowListener
+	{
+	public:
+		IWindowListener() = default;
+		virtual ~IWindowListener() = default;
+		virtual void OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height) {}
+	};
+
 	class Window
 	{
 	public:
@@ -25,10 +34,15 @@ namespace Era
         [[nodiscard]] auto GetSurfaceHeight() const -> uint32_t;
         [[nodiscard]] auto GetWin32WindowHandle() const -> HWND;
         [[nodiscard]] auto GetRenderer() const -> const std::shared_ptr<Renderer>& { return m_pRenderer; }
+
+		void Subscribe(IWindowListener* pListener);
+	private:
+		void NotifyWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height) const;
 	private:
 		SDL_Window* m_window = nullptr;
 		SDL_Event m_event{};
-		std::shared_ptr<Renderer> m_pRenderer;
+		std::shared_ptr<Renderer> m_pRenderer{};
+		std::list<IWindowListener*> m_Listeners{};
 	};
 
 }

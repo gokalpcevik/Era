@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <wrl/client.h>
 #include "ErrorChecker.h"
+#include "Layout.h"
 
 namespace Era
 {
@@ -16,10 +17,23 @@ namespace Era
     class VertexBuffer
 	{
     public:
+
         VertexBuffer(ID3D11Device* pDevice,Vertex* vertices,uint32_t size);
 
         void Bind(ID3D11DeviceContext* pContext) const;
     private:
+        ComPtr<ID3D11Buffer> m_vertexBufferD3D = nullptr;
+    };
+
+    class DynamicVertexBuffer
+    {
+    public:
+        DynamicVertexBuffer(ID3D11Device* pDevice, const VertexLayout& layout, void const* data, uint32_t size);
+
+        auto GetLayout() const -> const VertexLayout& { return m_Layout; }
+        void Bind(ID3D11DeviceContext* pContext);
+    private:
+        VertexLayout m_Layout{};
         ComPtr<ID3D11Buffer> m_vertexBufferD3D = nullptr;
     };
 
@@ -52,6 +66,7 @@ namespace Era
 
     template<typename Vertex>
     using VertexBufferRef = std::shared_ptr<VertexBuffer<Vertex>>;
+    using DynamicVertexBufferRef = std::shared_ptr<DynamicVertexBuffer>;
 }
 
 

@@ -3,11 +3,11 @@
 //
 
 #include "Renderer.h"
-#include "../Window.h"
+
 
 namespace Era
 {
-    Renderer::Renderer(const Window& window) :
+    Renderer::Renderer(Window& window) :
 	m_Device(std::make_shared<GraphicsDevice>()),
 	m_DeviceContext(m_Device->GetDeviceContext()),
 	m_SwapChain(std::make_shared<SwapChain>(window, m_Device->GetD3D11Device3())),
@@ -25,6 +25,7 @@ namespace Era
         vp.MinDepth = 0.0f;
         vp.MaxDepth = 1.0f;
         SetViewport(vp);
+        window.Subscribe(this);
     }
 
     void Renderer::Clear(const float colorRGBA[]) const
@@ -36,22 +37,6 @@ namespace Era
     {
         m_SwapChain->Present(syncInterval,flags);
         InfoQueue::Flush();
-    }
-
-    void Renderer::Resize() const
-    {
-	    m_DeviceContext->ResetBackBufferRTVs();
-	    m_SwapChain->ResizeBuffers();
-	    m_DeviceContext->CreateDepthStencilView_State(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
-	    m_DeviceContext->CreateBackBufferRTV(m_Device->GetD3D11Device3().Get(),m_SwapChain->GetDXGISwapChain().Get());
-        D3D11_VIEWPORT vp{};
-        vp.Height = static_cast<float>(m_pWindow->GetHeight());
-        vp.Width = static_cast<float>(m_pWindow->GetWidth());
-        vp.TopLeftX = 0.0f;
-        vp.TopLeftY = 0.0f;
-        vp.MinDepth = 0.0f;
-        vp.MaxDepth = 1.0f;
-        SetViewport(vp);
     }
 
     void Renderer::SetViewport(const D3D11_VIEWPORT& vp) const
@@ -74,6 +59,23 @@ namespace Era
         pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(), 0, 0);
     }
+
+    void Renderer::OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height)
+    {
+        m_DeviceContext->ResetBackBufferRTVs();
+        m_SwapChain->ResizeBuffers();
+        m_DeviceContext->CreateDepthStencilView_State(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
+        m_DeviceContext->CreateBackBufferRTV(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
+        D3D11_VIEWPORT vp{};
+        vp.Height = static_cast<float>(m_pWindow->GetHeight());
+        vp.Width = static_cast<float>(m_pWindow->GetWidth());
+        vp.TopLeftX = 0.0f;
+        vp.TopLeftY = 0.0f;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        SetViewport(vp);
+    }
+
 
     void Renderer::TakeScreenShot(const std::wstring& file) const
     {

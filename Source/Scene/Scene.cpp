@@ -6,7 +6,7 @@ namespace Era
 	Scene::Scene(const std::shared_ptr<Renderer>& pRenderer)
 		: m_Renderer(pRenderer)
 	{
-
+		pRenderer->GetWindow()->Subscribe(this);
 	}
 
 	auto Scene::CreateEntity() -> Entity
@@ -62,11 +62,8 @@ namespace Era
 				DX::XMStoreFloat4(&data.CameraPosition, pCamera->GetCameraPosition());
 				data.LightDirection = pDirectionalLight->LightDirection;
 				data.AmbientLightColor = pDirectionalLight->AmbientLightColor;
-				data.AmbientCoefficient = pDirectionalLight->AmbientCoefficient;
 				data.DiffuseLightColor = pDirectionalLight->DiffuseLightColor;
-				data.DiffuseCoefficient = pDirectionalLight->DiffuseCoefficient;
 				data.SpecularLightColor = pDirectionalLight->SpecularLightColor;
-				data.SpecularCoefficient = pDirectionalLight->SpecularCoefficient;
 				data.Shininess = pDirectionalLight->Shininess;
 				mrc.UpdateLightData(pContext, data);
 			}
@@ -74,14 +71,13 @@ namespace Era
 		}
 	}
 
-	void Scene::OnResize(uint32_t width, uint32_t height)
+	void Scene::OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height)
 	{
 		auto const cameraView = m_Registry.view<CameraComponent>();
-		for(auto const entity : cameraView)
+		for (auto const entity : cameraView)
 		{
 			auto&& cc = m_Registry.get<CameraComponent>(entity);
 			cc.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
 		}
-		
 	}
 }

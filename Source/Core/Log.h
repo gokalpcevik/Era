@@ -20,6 +20,7 @@ namespace Era
 } // namespace Era
 
 #define ERA_TRACE(...)    ::Era::Log::GetLogger()->trace(__VA_ARGS__)
+#define ERA_DEBUG(...)    ::Era::Log::GetLogger()->debug(__VA_ARGS__)
 #define ERA_INFO(...)     ::Era::Log::GetLogger()->info(__VA_ARGS__)
 #define ERA_WARN(...)     ::Era::Log::GetLogger()->warn(__VA_ARGS__)
 #define ERA_ERROR(...)    ::Era::Log::GetLogger()->error(__VA_ARGS__)

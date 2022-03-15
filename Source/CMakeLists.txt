@@ -8,16 +8,16 @@ find_package(directxtk CONFIG REQUIRED)
 find_package(directxtex CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+find_package(RmlUi CONFIG REQUIRED)
 
 add_executable("Era"
-        Log.cpp
-        Application.cpp
-        Window.cpp
         Main.cpp
         )
 
+add_subdirectory(Core)
 add_subdirectory(Renderer)
 add_subdirectory(Scene)
+add_subdirectory(UserInterface)
 add_subdirectory(Asset)
 
 set_target_properties("Era"
@@ -47,4 +47,6 @@ target_link_libraries("Era" PRIVATE
         Microsoft::DirectXTex
         assimp::assimp
         EnTT::EnTT
+        RmlCore
+        RmlDebugger
 )

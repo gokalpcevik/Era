@@ -24,6 +24,7 @@ namespace Era
         m_pDeviceD3D->QueryInterface(__uuidof(ID3D11Device3),&m_pDevice3D3D);
         if(m_pDeviceContextD3D)
                 m_pDeviceContext = std::make_shared<DeviceContext>(m_pDeviceContextD3D);
+
     }
 
     auto GraphicsDevice::CreateIndexBuffer(uint32_t* indices, uint32_t size) const -> std::shared_ptr<IndexBuffer>

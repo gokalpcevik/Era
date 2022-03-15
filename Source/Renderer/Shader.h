@@ -23,7 +23,7 @@ namespace Era
 	struct ShaderBlob
 	{
 		ShaderBlob() = default;
-		bool operator==(const ShaderBlob& other) const
+		auto operator==(const ShaderBlob& other) const -> bool
 		{
 			return Blob == other.Blob && Blob == other.ErrorBlob;
 		}
@@ -44,12 +44,18 @@ namespace Era
 	auto GetShaderTypeFromExtension(const std::filesystem::path& extension) -> ShaderType;
 	auto CompileShader(ID3DBlob** pBlob, ID3DBlob** pErrorBlob, const std::filesystem::path& shaderFilePath, LPCSTR const target) -> HRESULT;
 
-	class VertexShader
+	class ShaderBase
+	{
+	public:
+		virtual ~ShaderBase() = default;
+	};
+
+	class VertexShader : public ShaderBase
 	{
 	public:
 		VertexShader(ID3D11Device* pDevice, std::filesystem::path path);
 		VertexShader(ID3D11Device* pDevice, ShaderBlob blob);
-		~VertexShader();
+		virtual ~VertexShader();
 		void Bind(ID3D11DeviceContext* pContext) const;
 		[[nodiscard]] auto GetBufferPointer() const -> LPVOID { return m_ShaderBlob.Blob->GetBufferPointer(); }
 		[[nodiscard]] auto GetBufferSize() const -> SIZE_T { return m_ShaderBlob.Blob->GetBufferSize(); }
@@ -63,12 +69,12 @@ namespace Era
 		friend struct MeshRendererComponent;
 	};
 
-	class PixelShader
+	class PixelShader : public ShaderBase
 	{
 	public:
 		PixelShader(ID3D11Device* pDevice, std::filesystem::path path);
 		PixelShader(ID3D11Device* pDevice, ShaderBlob blob);
-		~PixelShader();
+		virtual ~PixelShader();
 		void Bind(ID3D11DeviceContext* pContext) const;
 		[[nodiscard]] auto GetBufferPointer() const -> LPVOID { return m_ShaderBlob.Blob->GetBufferPointer(); }
 		[[nodiscard]] auto GetBufferSize() const -> SIZE_T { return m_ShaderBlob.Blob->GetBufferSize(); }

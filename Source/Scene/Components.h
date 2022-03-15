@@ -150,9 +150,6 @@ namespace Era
 		DX::XMFLOAT4 AmbientLightColor{ 1.0f,1.0f,1.0f,1.0f }; //12
 		DX::XMFLOAT4 DiffuseLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
 		DX::XMFLOAT4 SpecularLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
-		float AmbientCoefficient = 0.08f; //4
-		float DiffuseCoefficient = 0.6f; //4
-		float SpecularCoefficient = 0.7f; //4
 		float Shininess = 400.0f;
 	};
 }

@@ -10,9 +10,9 @@ namespace Era
 		ShaderLibrary() = default;
 
 		static void AddShader(const std::filesystem::path& shaderFilePath, ShaderBlob blob);
-		static bool RemoveShader(const std::filesystem::path& shaderFilePath);
-		static ShaderBlob GetShaderBlob(const std::filesystem::path& shaderFilePath);
-		static bool Exists(const std::filesystem::path& shaderFilePath);
+		static auto RemoveShader(const std::filesystem::path& shaderFilePath) -> bool;
+		static auto GetShaderBlob(const std::filesystem::path& shaderFilePath) -> ShaderBlob;
+		static auto Exists(const std::filesystem::path& shaderFilePath) -> bool;
 
 	private:
 		static std::unordered_map<std::filesystem::path, ShaderBlob,ShaderBlobHashFn> m_ShaderNameToShaderBlob;

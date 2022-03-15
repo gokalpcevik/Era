@@ -2,7 +2,7 @@
 #include <iostream>
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
-#include "Application.h"
+#include "Core/Application.h"
 
 auto main(int argc, char *argv[]) -> int
 {

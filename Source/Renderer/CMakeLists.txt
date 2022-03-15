@@ -3,6 +3,7 @@ target_sources(Era PRIVATE
         DeviceContext.cpp
         SwapChain.cpp
         VertexBuffer.cpp
+        Layout.cpp
         IndexBuffer.cpp
         Texture2D.cpp
         InputLayout.cpp
@@ -12,4 +13,6 @@ target_sources(Era PRIVATE
         InfoQueue.cpp
         ErrorChecker.cpp
         ConstantBuffer.cpp
-        SamplerState.cpp)
+        SamplerState.cpp
+        Material.cpp
+        TextureArray.cpp)

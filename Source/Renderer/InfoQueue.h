@@ -6,7 +6,7 @@
 #include <d3d11_3.h>
 #include <wrl/client.h>
 #include "ErrorChecker.h"
-#include "../Log.h"
+#include "../Core/Log.h"
 #include <dxgidebug.h>
 
 namespace Era

@@ -18,9 +18,12 @@ namespace Era
 	class ConstantBuffer
 	{
 	public:
+		using ConstantBufferClass = Class;
+
 		ConstantBuffer(ID3D11Device* pDevice, const Class& cb,ConstantBufferType type);
 		void Bind(ID3D11DeviceContext* pContext) const;
 		void Update(ID3D11DeviceContext* pContext, const Class& data);
+		void Update(ID3D11DeviceContext* pContext, void* data);
 	private:
 		ComPtr<ID3D11Buffer> m_ConstantBuffer = nullptr;
 		ConstantBufferType m_Type{};
@@ -79,6 +82,7 @@ namespace Era
 		}
 		pContext->Unmap(m_ConstantBuffer.Get(), 0);
 	}
+
 
 	template <typename Class>
 	using ConstantBufferRef = std::shared_ptr<ConstantBuffer<Class>>;

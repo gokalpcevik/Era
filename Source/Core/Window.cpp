@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "../Renderer/Renderer.h"
 
 namespace Era
 {
@@ -30,6 +31,25 @@ namespace Era
 
 	auto Window::PollEvents() -> int
 	{
+		switch (m_event.type)
+		{
+		case SDL_QUIT:
+		{
+			return 0;
+		}
+		case SDL_WINDOWEVENT:
+		{
+			switch (m_event.window.event)
+			{
+			case SDL_WINDOWEVENT_RESIZED:
+			{
+				this->NotifyWindowResized(m_window, m_event.window.data1, m_event.window.data2);
+				break;
+			}
+			}
+		}
+		default: break;
+		}
 		return SDL_PollEvent(&m_event);
 	}
 
@@ -74,4 +94,17 @@ namespace Era
 	{
         return m_window == nullptr;
     }
+
+	void Window::Subscribe(IWindowListener* pListener)
+	{
+		m_Listeners.push_back(pListener);
+	}
+
+	void Window::NotifyWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height) const
+	{
+		for(auto* pListener : m_Listeners)
+		{
+			pListener->OnWindowResized(resizedWindow, width, height);
+		}
+	}
 }

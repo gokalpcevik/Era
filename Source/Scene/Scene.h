@@ -6,7 +6,7 @@ namespace Era
 {
 	class Entity;
 
-	class Scene
+	class Scene : public IWindowListener
 	{
 	public:
 		friend class Application;
@@ -31,7 +31,7 @@ namespace Era
 		auto RemoveComponentIfExists(entt::entity entity) -> void;
 
 	private:
-		auto OnResize(uint32_t width, uint32_t height) -> void;
+		void OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height) override;
 	private:
 		entt::registry m_Registry{};
 		std::shared_ptr<Renderer> m_Renderer;
@@ -58,4 +58,6 @@ namespace Era
 	{
 		m_Registry.remove_if_exists<T>(entity);
 	}
+
+	using SceneRef = std::shared_ptr<Scene>;
 }

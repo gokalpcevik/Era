@@ -6,9 +6,10 @@
 #include "Window.h"
 #include "Log.h"
 #include <wrl.h>
-#include "Scene/Scene.h"
-#include "Scene/Components.h"
-#include "Scene/Entity.h"
+#include "../Scene/Scene.h"
+#include "../Scene/Components.h"
+#include "../Scene/Entity.h"
+#include "../UserInterface/RenderInterface.h"
 
 namespace Era
 {
@@ -40,7 +41,7 @@ namespace Era
         CommandLineArguments m_CmdArgs{};
         std::shared_ptr<Window> m_Window;
         bool m_Running = true;
-        std::shared_ptr<Scene> m_Scene;
+        SceneRef m_Scene;
 
         std::mutex m_CreateMeshesMutex;
         std::future<void> m_CreateMeshesFuture;
@@ -48,7 +49,7 @@ namespace Era
         Entity directionalLight;
         Entity box;
         Entity box2;
-        float yaw = 0.0f;
+        float xDir = 0.0f;
     };
 }
 

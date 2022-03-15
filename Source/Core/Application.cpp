@@ -30,13 +30,10 @@ namespace Era
         directionalLight = m_Scene->CreateEntity();
         auto&& dlc = directionalLight.AddComponent<DirectionalLightComponent>();
         dlc.LightDirection = { -0.1f,-1.0f,0.0f,1.0f };
-        dlc.SpecularLightColor = { 1.0f,1.0f,1.0f,1.0f };
-        dlc.SpecularCoefficient = 0.5f;
-		dlc.DiffuseCoefficient = 0.3f;
-        dlc.DiffuseLightColor = { 1.0f,1.0f,1.0f,1.0f };
-        dlc.AmbientCoefficient = 0.08f;
-        dlc.AmbientLightColor = { 1.0f,1.0f,1.0f,1.0f };
-        dlc.Shininess = 100.0f;
+        dlc.SpecularLightColor = { 0.9f,0.9f,0.9f,1.0f };
+        dlc.DiffuseLightColor = { 0.4f,0.1f,0.1f,1.0f };
+        dlc.AmbientLightColor = { 0.08f,0.08f,0.08f,1.0f };
+        dlc.Shininess = 50.0f;
 		box = m_Scene->CreateEntity();
         box.AddComponent<TransformComponent>().Translation = { 0.0f,0.0f,+5.0f };
         DX::XMVECTOR rot = DX::XMQuaternionRotationRollPitchYaw(45.0f,0.0f,0.0f);
@@ -72,8 +69,6 @@ namespace Era
 	                    {
 		                    case SDL_WINDOWEVENT_RESIZED:
 		                    {
-		                        m_Window->GetRenderer()->Resize();
-		                        m_Scene->OnResize(m_Window->GetEvent().window.data1, m_Window->GetEvent().window.data2);
                                 ERA_INFO("Window resized to {0}x{1}", m_Window->GetEvent().window.data1, m_Window->GetEvent().window.data2);
 		                        break;
 		                    }
@@ -85,8 +80,8 @@ namespace Era
             m_Scene->Update();
             static float x = 0.01f;
             x += 0.01f;
-            yaw = std::cos(x);
-            directionalLight.GetComponent<DirectionalLightComponent>().LightDirection = { yaw,-0.75f,0.0f,1.0f };
+            xDir = std::cos(x);
+            directionalLight.GetComponent<DirectionalLightComponent>().LightDirection = { xDir,-0.75f,0.0f,1.0f };
 
             constexpr float color[] = { 0.1f,0.1f,0.1f,1.0f };
             GetRenderer()->Clear(color);
@@ -99,7 +94,7 @@ namespace Era
 	void Application::CreateMeshes()
 	{
         std::lock_guard lock(m_CreateMeshesMutex);
-        MeshAsset meshAsset("Assets/high_poly_monkey.fbx", 0);
+        MeshAsset meshAsset("Assets/monkey.fbx", 0);
         meshAsset.Import();
         box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), meshAsset);
 	}

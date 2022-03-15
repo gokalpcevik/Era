@@ -12,8 +12,10 @@ namespace Era
 	{
 	public:
 		Texture2D() = default;
-		Texture2D(ID3D11Device* pDevice,const std::filesystem::path& path);
+		Texture2D(ID3D11Device* pDevice, const std::filesystem::path& path);
+		Texture2D(ID3D11Device* pDevice,const uint8_t* data,size_t size);
 
+		void BindToVertexShader(ID3D11DeviceContext* pContext);
 		void BindToPixelShader(ID3D11DeviceContext* pContext);
 		[[nodiscard]] auto GetShaderResourceView() const -> const ComPtr<ID3D11ShaderResourceView>& { return m_pSRV; }
 		[[nodiscard]] auto GetResource() const -> const ComPtr<ID3D11Resource>& { return m_pResource; }
@@ -24,4 +26,5 @@ namespace Era
 	};
 
 	using Texture2DRef = std::shared_ptr<Texture2D>;
+	using Texture2DUniqueRef = std::unique_ptr<Texture2D>;
 }

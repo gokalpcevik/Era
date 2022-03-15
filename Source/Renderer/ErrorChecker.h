@@ -5,7 +5,7 @@
 #pragma once
 #include "../MinWindows.h"
 
-#include "../Log.h"
+#include "../Core/Log.h"
 #include <iostream>
 #define DX_RESULT(HR) Era::ErrorChecker::CheckLine_File(HR,__LINE__,__FILE__)
 
