@@ -14,5 +14,6 @@ target_sources(Era PRIVATE
         ErrorChecker.cpp
         ConstantBuffer.cpp
         SamplerState.cpp
+        RasterizerState.cpp
         Material.cpp
         TextureArray.cpp)

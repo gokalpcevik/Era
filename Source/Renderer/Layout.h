@@ -28,7 +28,7 @@ namespace Era
 	auto constexpr GetShaderFormatSize(ShaderDataFormat type) -> uint32_t;
 	auto ShaderDataFormatToDXGIFormat(ShaderDataFormat format) -> DXGI_FORMAT;
 
-	struct LayoutElement
+	struct VertexLayoutElement
 	{
 		ShaderDataFormat Format{};
 		uint32_t Size{};
@@ -37,9 +37,9 @@ namespace Era
 		uint32_t SemanticIndex{};
 		std::string SemanticName{};
 
-		LayoutElement() = default;
+		VertexLayoutElement() = default;
 
-		LayoutElement(ShaderDataFormat type,std::string name, bool normalized = false)
+		VertexLayoutElement(ShaderDataFormat type,std::string name, bool normalized = false)
 			: Format(type), Size(GetShaderFormatSize(type)), AlignedByteOffset(0), SemanticName(std::move(name))
 		{
 		}
@@ -53,9 +53,9 @@ namespace Era
 		VertexLayout(ID3DBlob* pBlob);
 
 		[[nodiscard]] auto GetStride() const -> uint32_t { return m_Stride; }
-		[[nodiscard]] auto GetElements() const -> std::vector<LayoutElement> const& { return m_Elements; }
+		[[nodiscard]] auto GetElements() const -> std::vector<VertexLayoutElement> const& { return m_Elements; }
 	private:
-		std::vector<LayoutElement> m_Elements{0};
+		std::vector<VertexLayoutElement> m_Elements{0};
 		uint32_t m_Stride = 0;
 	};
 }

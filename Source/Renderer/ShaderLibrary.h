@@ -12,6 +12,7 @@ namespace Era
 		static void AddShader(const std::filesystem::path& shaderFilePath, ShaderBlob blob);
 		static auto RemoveShader(const std::filesystem::path& shaderFilePath) -> bool;
 		static auto GetShaderBlob(const std::filesystem::path& shaderFilePath) -> ShaderBlob;
+		static auto GetOrAddShaderBlob(const std::filesystem::path& shaderFilePath) -> ShaderBlob;
 		static auto Exists(const std::filesystem::path& shaderFilePath) -> bool;
 
 	private:

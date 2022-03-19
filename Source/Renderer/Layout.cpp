@@ -64,7 +64,7 @@ namespace Era
         {
             D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
             pReflection->GetInputParameterDesc(i, &paramDesc);
-            LayoutElement element{};
+            VertexLayoutElement element{};
 
             if (paramDesc.Mask == 1)
             {

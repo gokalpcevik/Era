@@ -28,6 +28,8 @@ namespace Era
 
 	void TextureArray::BindToPixelShader(ID3D11DeviceContext* pContext) const
 	{
+		if (m_Textures.size() <= 0)
+			return;
 		std::vector<ID3D11ShaderResourceView* const*> SRViews;
 		for(auto& t : m_Textures)
 		{

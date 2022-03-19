@@ -32,7 +32,7 @@ namespace Era
         return std::make_shared<IndexBuffer>(m_pDevice3D3D.Get(), indices, size);
     }
 
-    auto GraphicsDevice::CreateTexture2D(std::wstring_view path) const -> std::shared_ptr<Texture2D>
+    auto GraphicsDevice::CreateTexture2D(std::filesystem::path path) const -> std::shared_ptr<Texture2D>
     {
         return std::make_shared<Texture2D>(m_pDevice3D3D.Get(), path);
     }
@@ -56,5 +56,10 @@ namespace Era
     auto GraphicsDevice::CreatePixelShader(std::wstring_view path) const -> PixelShaderRef
     {
         return std::make_shared<PixelShader>(m_pDevice3D3D.Get(), path);
+    }
+
+    auto GraphicsDevice::CreateMaterial(std::filesystem::path vs, std::filesystem::path ps) const -> MaterialRef
+    {
+        return std::make_shared<Material>(m_pDevice3D3D.Get(), m_pDeviceContextD3D.Get(), vs, ps);
     }
 }

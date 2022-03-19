@@ -15,7 +15,7 @@
 #include "InputLayout.h"
 #include "Shader.h"
 #include "ErrorChecker.h"
-
+#include "Material.h"
 
 namespace Era
 {
@@ -33,7 +33,7 @@ namespace Era
         template<typename T>
         [[nodiscard]] auto CreateVertexBuffer(T* vertices,uint32_t size) const -> std::shared_ptr<VertexBuffer<T>>;
         [[nodiscard]] auto CreateIndexBuffer(uint32_t* indices, uint32_t size) const -> std::shared_ptr<IndexBuffer>;
-        [[nodiscard]] auto CreateTexture2D(std::wstring_view path) const -> std::shared_ptr<Texture2D>;
+        [[nodiscard]] auto CreateTexture2D(std::filesystem::path path) const -> std::shared_ptr<Texture2D>;
         [[nodiscard]] auto CreateInputLayout(
             const D3D11_INPUT_ELEMENT_DESC* elements,
             uint32_t size,
@@ -41,6 +41,7 @@ namespace Era
             size_t byteCodeLength) const -> std::shared_ptr<InputLayout>;
         [[nodiscard]] auto CreateVertexShader(std::wstring_view path) const -> VertexShaderRef;
         [[nodiscard]] auto CreatePixelShader(std::wstring_view path) const -> PixelShaderRef;
+        [[nodiscard]] auto CreateMaterial(std::filesystem::path vs, std::filesystem::path ps) const->MaterialRef;
 	private:
         ComPtr<ID3D11Device> m_pDeviceD3D = nullptr;
         ComPtr<ID3D11Device3> m_pDevice3D3D = nullptr;

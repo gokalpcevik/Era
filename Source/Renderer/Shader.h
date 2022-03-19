@@ -14,10 +14,11 @@ namespace Era
 
 	enum class ShaderType
 	{
+		Unknown = -1,
 		Vertex = 0,
 		Pixel,
 		Compute,
-		Geometry
+		Geometry,
 	};
 
 	struct ShaderBlob
@@ -42,6 +43,7 @@ namespace Era
 	};
 
 	auto GetShaderTypeFromExtension(const std::filesystem::path& extension) -> ShaderType;
+	auto GetShaderTargetFromType(ShaderType type) -> std::string;
 	auto CompileShader(ID3DBlob** pBlob, ID3DBlob** pErrorBlob, const std::filesystem::path& shaderFilePath, LPCSTR const target) -> HRESULT;
 
 	class ShaderBase
@@ -66,7 +68,7 @@ namespace Era
 		ComPtr<ID3D11VertexShader> m_pShader = nullptr;
 		std::filesystem::path m_Path;
 
-		friend struct MeshRendererComponent;
+		friend class MeshRendererComponent;
 	};
 
 	class PixelShader : public ShaderBase
@@ -86,7 +88,7 @@ namespace Era
 		ComPtr<ID3D11PixelShader> m_pShader = nullptr;
 		std::filesystem::path m_Path;
 
-		friend struct MeshRendererComponent;
+		friend class MeshRendererComponent;
 	};
 
 	using VertexShaderRef = std::shared_ptr<VertexShader>;

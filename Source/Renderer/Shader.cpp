@@ -12,7 +12,20 @@ namespace Era
 			return ShaderType::Compute;
 		else if (extension == ".gshader")
 			return ShaderType::Geometry;
-		return {};
+		return ShaderType::Unknown;
+	}
+
+	auto GetShaderTargetFromType(ShaderType type) -> std::string
+	{
+		switch(type)
+		{
+		case ShaderType::Unknown: return "";
+		case ShaderType::Vertex: return "vs_5_0";
+		case ShaderType::Pixel: return "ps_5_0";
+		case ShaderType::Compute: return "cs_5_0";
+		case ShaderType::Geometry: return "gs_5_0";
+		}
+		return "";
 	}
 
 	auto CompileShader(ID3DBlob** pBlob, ID3DBlob** pErrorBlob, const std::filesystem::path& shaderFilePath, LPCSTR const target) -> HRESULT
@@ -27,7 +40,7 @@ namespace Era
 			ERA_ERROR("Shader files need to have a \".*shader\" extension!, {0}",shaderFilePath.string());
 			return E_FAIL;
 		}
-
+		ERA_INFO("Now compiling shader>{0}", shaderFilePath.string());
 		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 #if defined( DEBUG ) || defined( _DEBUG )
 		flags |= D3DCOMPILE_DEBUG;

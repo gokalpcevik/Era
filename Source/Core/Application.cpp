@@ -18,7 +18,7 @@ namespace Era
         ERA_INFO("Created a window with the following size: {}x{}",w,h);
         m_Scene = std::make_shared<Scene>(GetRenderer());
         camera = m_Scene->CreateEntity();
-        auto view = DX::XMMatrixLookAtLH(DX::XMVectorSet(0.0f, 0.0f, +1.0f, 1.0f), DX::XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f), DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+        auto view = DX::XMMatrixLookAtLH(DX::XMVectorSet(0.0f, 0.0f, +2.0f, 1.0f), DX::XMVectorSet(0.0f, 0.0f, 5.0f, 1.0f), DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 
         auto&& cc = camera.AddComponent<CameraComponent>(ProjectionType::Perspective, (float)m_Window->GetWidth() / (float)m_Window->GetHeight());
 		cc.SetPerspectiveHalfAngleFOV(45.0f);
@@ -45,9 +45,12 @@ namespace Era
         DX::XMStoreFloat4(&box2.GetComponent<TransformComponent>().Rotation, rot);
         box2.GetComponent<TransformComponent>().Scale = { 1.0f,1.0f,1.0f };
 
-        //CreateMeshes();
-        m_CreateMeshesFuture = std::async(std::launch::async,&Application::CreateMeshes,this);
-
+        auto mat = GetRenderer()->GetGraphicsDevice()->CreateMaterial("Shaders/Lit.vshader","Shaders/Lit.pshader");
+        mat->SetFillMode(FillMode::FillSolid);
+        mat->SetCullMode(CullMode::CullBack);
+		MeshAsset meshAsset("Assets/monkey.fbx", 0);
+        meshAsset.Import();
+        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), meshAsset,mat);
         return Update();
     }
 
@@ -90,14 +93,6 @@ namespace Era
         }
         return 0;
     }
-
-	void Application::CreateMeshes()
-	{
-        std::lock_guard lock(m_CreateMeshesMutex);
-        MeshAsset meshAsset("Assets/monkey.fbx", 0);
-        meshAsset.Import();
-        box.AddComponent<MeshRendererComponent>(GetRenderer()->GetGraphicsDevice()->GetD3D11Device().Get(), meshAsset);
-	}
 
 	auto Application::Get() -> Application&
 	{

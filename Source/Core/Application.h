@@ -42,9 +42,6 @@ namespace Era
         std::shared_ptr<Window> m_Window;
         bool m_Running = true;
         SceneRef m_Scene;
-
-        std::mutex m_CreateMeshesMutex;
-        std::future<void> m_CreateMeshesFuture;
         Entity camera;
         Entity directionalLight;
         Entity box;

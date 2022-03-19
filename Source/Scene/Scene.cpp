@@ -52,20 +52,20 @@ namespace Era
 		{
 			auto&& [mrc, tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
 			if(pCamera)
-				mrc.SetWorldViewProjection(pContext,
+				mrc.SetWorldViewProjectionMatrices(pContext,
 			                           DX::XMMatrixTranspose(tc.GetTransform() * pCamera->GetViewProjection()));
-			mrc.SetWorld(pContext,DX::XMMatrixTranspose(tc.GetTransform()));
+			mrc.SetWorldMatrix(pContext,DX::XMMatrixTranspose(tc.GetTransform()));
 
 			if(pDirectionalLight)
 			{
-				MeshRendererComponent::PSConstantBufferData data{};
+				PSDefaultCBufferData data{};
 				DX::XMStoreFloat4(&data.CameraPosition, pCamera->GetCameraPosition());
 				data.LightDirection = pDirectionalLight->LightDirection;
 				data.AmbientLightColor = pDirectionalLight->AmbientLightColor;
 				data.DiffuseLightColor = pDirectionalLight->DiffuseLightColor;
 				data.SpecularLightColor = pDirectionalLight->SpecularLightColor;
 				data.Shininess = pDirectionalLight->Shininess;
-				mrc.UpdateLightData(pContext, data);
+				mrc.GetMaterial()->UpdateLightData(pContext, data);
 			}
 			m_Renderer->DrawMesh(mrc);
 		}

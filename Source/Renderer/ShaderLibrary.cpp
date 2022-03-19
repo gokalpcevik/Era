@@ -29,6 +29,29 @@ namespace Era
 		return m_ShaderNameToShaderBlob[shaderFilePath.filename().string()];
 	}
 
+	auto ShaderLibrary::GetOrAddShaderBlob(const std::filesystem::path& shaderFilePath) -> ShaderBlob
+	{
+		auto extension = GetShaderTypeFromExtension(shaderFilePath.extension());
+		ShaderBlob blob{ nullptr,nullptr,extension };
+		auto const shaderType = extension;
+		if (shaderType == ShaderType::Unknown)
+		{
+			ERA_ERROR("Unknown shader extension file!: {0}", extension);
+			return { nullptr,nullptr };
+		}
+
+		if (!ShaderLibrary::Exists(shaderFilePath))
+		{
+			DX_RESULT(CompileShader(&blob.Blob, &blob.ErrorBlob, shaderFilePath, Era::GetShaderTargetFromType(shaderType).c_str()));
+			ShaderLibrary::AddShader(shaderFilePath, blob);
+			return blob;
+		}
+		else
+		{
+			return m_ShaderNameToShaderBlob[shaderFilePath.filename().string()];
+		}
+	}
+
 	auto ShaderLibrary::Exists(const std::filesystem::path& shaderFilePath) -> bool
 	{
 		return m_ShaderNameToShaderBlob.find(shaderFilePath.filename().string()) != m_ShaderNameToShaderBlob.end();
