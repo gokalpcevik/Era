@@ -44,7 +44,7 @@ namespace Era
 			DX::XMFLOAT3 Position{};
 			DX::XMFLOAT3 Normal{};
 			DX::XMFLOAT2 UV{};
-			uint32_t UseSamplers = 0;
+			uint32_t UseSamplers = 1;
 		};
 
 		struct VSConstantBufferData

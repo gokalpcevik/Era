@@ -2,6 +2,7 @@
 #include <d3d11_3.h>
 #include <filesystem>
 #include <DirectXTK/WICTextureLoader.h>
+#include <DirectXTK/DDSTextureLoader.h>
 #include <DirectXMath.h>
 #include <wrl/client.h>
 #include "ErrorChecker.h"
@@ -16,7 +17,7 @@ namespace Era
 		Texture2D(ID3D11Device* pDevice, const std::filesystem::path& path);
 		Texture2D(ID3D11Device* pDevice,const uint8_t* data,size_t size);
 
-		DirectX::XMUINT2 GetDimensions();
+		[[nodiscard]] auto GetDimensions() const -> DirectX::XMUINT2;
 		void BindToVertexShader(ID3D11DeviceContext* pContext);
 		void BindToPixelShader(ID3D11DeviceContext* pContext);
 		void BindToPixelShader(ID3D11DeviceContext* pContext,const UINT startSlot);

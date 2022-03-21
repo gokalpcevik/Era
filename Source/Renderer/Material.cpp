@@ -89,6 +89,11 @@ namespace Era
 		m_ConstantBuffers[index]->Update(pContext, data);
 	}
 
+	void Material::SetShininess(float s)
+	{
+		m_DefaultCBData.Shininess = s;
+	}
+
 	size_t Material::GetNumberOfConstantBuffers(ID3DBlob* blob)
 	{
 		ID3D11ShaderReflection* pReflection = nullptr;

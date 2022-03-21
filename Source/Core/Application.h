@@ -4,12 +4,20 @@
 
 #pragma once
 #include "Window.h"
+#include "Timer.h"
 #include "Log.h"
 #include <wrl.h>
 #include "../Scene/Scene.h"
 #include "../Scene/Components.h"
 #include "../Scene/Entity.h"
 #include "../UserInterface/RenderInterface.h"
+#include "../UserInterface/SystemInterface.h"
+#include "../UserInterface/SystemInterface.h"
+#include <imgui.h>
+#include <imgui_impl_dx11.h>
+#include <imgui_impl_sdl.h>
+#include "../Editor/EditorUI.h"
+
 
 namespace Era
 {
@@ -36,17 +44,22 @@ namespace Era
     private:
         auto Update() -> int;
         auto GetRenderer() const -> const std::shared_ptr<Renderer>& { return m_Window->GetRenderer(); }
-        void CreateMeshes();
     private:
         CommandLineArguments m_CmdArgs{};
         std::shared_ptr<Window> m_Window;
-        bool m_Running = true;
+        Timer m_Timer;
+    	bool m_Running = true;
         SceneRef m_Scene;
         Entity camera;
         Entity directionalLight;
         Entity box;
         Entity box2;
         float xDir = 0.0f;
+        float m_LastTickCount = 0.0f;
+        float m_FrameTime = 0.0f;
+
+        MaterialRef mat;
+        char buf[512] = "Assets/white.png";
     };
 }
 

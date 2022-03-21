@@ -56,8 +56,9 @@ namespace Era
 		 * @index Determines which buffer should the data be set.
 		 */
 		void SetData(ID3D11DeviceContext* pContext,void* data,size_t index) const;
+		void SetShininess(float s);
 	private:
-		static size_t GetNumberOfConstantBuffers(ID3DBlob* blob);
+		static auto GetNumberOfConstantBuffers(ID3DBlob* blob) -> size_t;
 		void UpdateLightData(ID3D11DeviceContext* pContext, const PSDefaultCBufferData& data) const;
 		void Bind() const;
 	private:

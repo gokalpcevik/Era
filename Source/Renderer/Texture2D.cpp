@@ -7,12 +7,12 @@ namespace Era
 		DX_RESULT(DirectX::CreateWICTextureFromFile(pDevice, path.c_str(), &m_pResource, &m_pSRV));
 	}
 
-	Texture2D::Texture2D(ID3D11Device* pDevice, const uint8_t* data,size_t size)
+	Texture2D::Texture2D(ID3D11Device* pDevice,const uint8_t* data,size_t size)
 	{
 		DX_RESULT(DirectX::CreateWICTextureFromMemory(pDevice, data, size, &m_pResource, &m_pSRV));
 	}
 
-	DirectX::XMUINT2 Texture2D::GetDimensions()
+	auto Texture2D::GetDimensions() const -> DirectX::XMUINT2
 	{
 		ComPtr<ID3D11Texture2D> tex;
 		DX_RESULT(m_pResource.As(&tex));

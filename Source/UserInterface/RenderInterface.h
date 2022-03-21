@@ -3,8 +3,11 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include <DirectXMath.h>
+#include <DirectXTex.h>
 #include <DirectXTK/WICTextureLoader.h>
 #include "../Renderer/VertexBuffer.h"
+#include "../Renderer/InputLayout.h"
+#include "../Renderer/Layout.h"
 #include "../Renderer/ConstantBuffer.h"
 #include "../Renderer/IndexBuffer.h"
 #include "../Renderer/Texture2D.h"
@@ -22,28 +25,31 @@ namespace Era
 		{
 			DX::XMFLOAT4 Position;
 			DX::XMFLOAT2 UV;
-			std::array<uint8_t, 4> Color;
+			DX::XMFLOAT4 Color;
 		};
 
 		struct UIVSConstantBuffer
 		{
-			DX::XMFLOAT4X4 Transform{};
+			alignas(16) DX::XMFLOAT4X4 Transform{};
+			alignas(16) DX::XMFLOAT2 Translation{};
 		};
 
 		struct CompiledGeometry
 		{
-			VertexBufferRef<UIVertex> VertexBuffer{};
-			ConstantBufferRef<UIVSConstantBuffer> ConstantBuffer{};
-			IndexBufferRef IndexBuffer{};
-			VertexShaderRef VertexShader{};
-			PixelShaderRef PixelShader{};
-			uintptr_t TextureHandle{};
+			VertexBuffer<UIVertex>* VertexBuffer;
+			ConstantBuffer<UIVSConstantBuffer>* ConstantBuffer{};
+			InputLayout* InputLayout{};
+			IndexBuffer* IndexBuffer{};
+			VertexShader* VertexShader{};
+			PixelShader* PixelShader{};
+			RasterizerState* RasterizerState{};
+			ID3D11ShaderResourceView* Texture{};
 		};
 
 		class RenderInterface : public Rml::RenderInterface , public IWindowListener
 		{
 		public:
-			RenderInterface(ID3D11Device* pDevice,const DX::XMFLOAT2& viewportSize,ID3D11DeviceContext* pContext);
+			RenderInterface(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const DX::XMFLOAT2& viewportSize);
 
 			void RenderGeometry(Rml::Vertex* vertices, int num_vertices, int* indices, int num_indices,
 			                    Rml::TextureHandle texture, const Rml::Vector2f& translation) override;
@@ -69,6 +75,7 @@ namespace Era
 			DX::XMFLOAT2 m_WindowSize{ 1600,900 };
 			ID3D11Device* m_Device{ nullptr };
 			ID3D11DeviceContext* m_DeviceContext{ nullptr };
+			DX::XMMATRIX m_Transform = DX::XMMatrixIdentity();
 		};
 	}
 }
