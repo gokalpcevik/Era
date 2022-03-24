@@ -33,10 +33,11 @@ namespace Era
         m_DeviceContext->Clear(colorRGBA);
     }
 
-    void Renderer::Present(uint32_t syncInterval, uint32_t flags) const
+    void Renderer::Present(uint32_t syncInterval, uint32_t flags)
     {
         m_SwapChain->Present(syncInterval,flags);
         InfoQueue::Flush();
+        m_DrawCalls = 0;
     }
 
     void Renderer::SetViewport(const D3D11_VIEWPORT& vp) const
@@ -44,7 +45,7 @@ namespace Era
         m_DeviceContext->SetViewport(vp);
     }
 
-    void Renderer::DrawMesh(const MeshRendererComponent& mrc) const
+    void Renderer::DrawMesh(const MeshRendererComponent& mrc)
     {
 	    ID3D11DeviceContext* pContext = m_DeviceContext->GetD3D11DeviceContext().Get();
         mrc.GetVertexBuffer()->Bind(pContext);
@@ -53,6 +54,8 @@ namespace Era
         mrc.GetMaterial()->Bind();
         pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(), 0, 0);
+        m_DrawCalls++;
+        mrc.GetMaterial()->UnbindTextures();
     }
 
     void Renderer::OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height)

@@ -64,7 +64,7 @@ namespace Era
 				data.AmbientLightColor = pDirectionalLight->AmbientLightColor;
 				data.DiffuseLightColor = pDirectionalLight->DiffuseLightColor;
 				data.SpecularLightColor = pDirectionalLight->SpecularLightColor;
-				data.Shininess = pDirectionalLight->Shininess;
+				data.Shininess = mrc.GetMaterial()->GetShininess();
 				mrc.GetMaterial()->UpdateLightData(pContext, data);
 			}
 			m_Renderer->DrawMesh(mrc);

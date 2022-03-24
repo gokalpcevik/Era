@@ -27,14 +27,16 @@ namespace Era
         Renderer(Window& window);
 
         void Clear(const float colorRGBA[]) const;
-        void Present(uint32_t syncInterval,uint32_t flags) const;
-        void Resize() const;
+        void Present(uint32_t syncInterval,uint32_t flags);
         void SetViewport(const D3D11_VIEWPORT& vp) const;
         void TakeScreenShot(const std::wstring& file) const;
-        void DrawMesh(const MeshRendererComponent& mrc) const;
+        void DrawMesh(const MeshRendererComponent& mrc);
         auto GetWindow() const -> Window * { return m_pWindow; }
 
+        uint64_t GetDrawCallCount() const { return m_DrawCalls; }
+
         [[nodiscard]] auto GetGraphicsDevice() const -> const std::shared_ptr<GraphicsDevice>& { return m_Device; }
+        [[nodiscard]] auto GetSwapChain() const -> const std::shared_ptr<SwapChain>& { return m_SwapChain; }
 
     private:
         void OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height) override;
@@ -43,7 +45,7 @@ namespace Era
         std::shared_ptr<GraphicsDevice> m_Device;
         std::shared_ptr<DeviceContext> m_DeviceContext;
         std::shared_ptr<SwapChain> m_SwapChain;
-
+        uint64_t m_DrawCalls = 0;
         Window* m_pWindow = nullptr;
         DX::XMMATRIX m_ViewProjection{};
 

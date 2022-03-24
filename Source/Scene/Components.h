@@ -35,7 +35,7 @@ namespace Era
 		}
 		DX::XMFLOAT3 Translation{};
 		DX::XMFLOAT4 Rotation{};
-		DX::XMFLOAT3 Scale{};
+		DX::XMFLOAT3 Scale{1.0f,1.0f,1.0f};
 	};
 
 	enum class ProjectionType
@@ -150,6 +150,5 @@ namespace Era
 		DX::XMFLOAT4 AmbientLightColor{ 1.0f,1.0f,1.0f,1.0f }; //12
 		DX::XMFLOAT4 DiffuseLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
 		DX::XMFLOAT4 SpecularLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
-		float Shininess = 400.0f;
 	};
 }

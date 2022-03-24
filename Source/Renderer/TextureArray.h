@@ -11,7 +11,9 @@ namespace Era
 		void Push(const Texture2DRef& texture);
 		void Pop();
 		void BindToPixelShader(ID3D11DeviceContext* pContext) const;
+		void UnbindFromPixelShader(ID3D11DeviceContext* pContext);
 
+		[[nodiscard]] auto GetTexture(size_t index) const -> const Texture2DRef&;
 	private:
 		std::list<Texture2DRef> m_Textures;
 	};

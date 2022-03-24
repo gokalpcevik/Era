@@ -9,32 +9,12 @@ namespace Era
 {
     SwapChain::SwapChain(const Window& window, const ComPtr<ID3D11Device3>& pDevice)
     {
-        DXGI_SWAP_CHAIN_DESC SwapChainDesc{};
-        SwapChainDesc.BufferDesc.Width = window.GetWidth();
-        SwapChainDesc.BufferDesc.Height = window.GetHeight();
-        SwapChainDesc.OutputWindow = window.GetWin32WindowHandle();
-        SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-        SwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
-        SwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
-        SwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-        SwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-        SwapChainDesc.SampleDesc.Count = 1;
-        SwapChainDesc.SampleDesc.Quality = 0;
-        SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        SwapChainDesc.BufferCount = 2;
-        SwapChainDesc.Windowed = TRUE;
-        SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-        SwapChainDesc.Flags = 0;
-
-        ComPtr<IDXGIDevice1> pDXGIDevice;
-        ComPtr<IDXGIAdapter> pDXGIAdapter;
-        ComPtr<IDXGIFactory1> pDXGIFactory;
         DX_RESULT(pDevice.As(&pDXGIDevice));
-        DX_RESULT(CreateDXGIFactory1(__uuidof(IDXGIFactory1), &pDXGIFactory));
-        DX_RESULT(pDXGIFactory->EnumAdapters(0, &pDXGIAdapter));
+        DX_RESULT(CreateDXGIFactory1(__uuidof(IDXGIFactory3), &pDXGIFactory));
+        DX_RESULT(pDXGIFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(pDXGIAdapter3.ReleaseAndGetAddressOf())));
         ERA_INFO("Getting the first adapter from IDXGIFactory:");
         DXGI_ADAPTER_DESC AdapterDesc;
-        DX_RESULT(pDXGIAdapter->GetDesc(&AdapterDesc));
+        DX_RESULT(pDXGIAdapter3->GetDesc(&AdapterDesc));
 
         constexpr size_t outputSize = _countof(AdapterDesc.Description) + 1; // +1 for null terminator
         char* adapterDescriptionPtr = new char[outputSize];
@@ -45,7 +25,22 @@ namespace Era
         ERA_INFO("Adapter Description: {0}", adapterDescriptionPtr);
         delete[] adapterDescriptionPtr;
     	ERA_INFO("Dedicated Video Memory: {0}MB", (size_t)AdapterDesc.DedicatedVideoMemory/1024/1024);
-    	DX_RESULT(pDXGIFactory->CreateSwapChain(pDevice.Get(),&SwapChainDesc,&m_pSwapChainD3D));
+
+        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+        swapChainDesc.Width = window.GetWidth();
+        swapChainDesc.Height = window.GetHeight();
+        swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        swapChainDesc.Stereo = FALSE;
+        swapChainDesc.SampleDesc.Count = 1;
+        swapChainDesc.SampleDesc.Quality = 0;
+        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        swapChainDesc.BufferCount = 2;
+        swapChainDesc.Scaling = DXGI_SCALING_NONE;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+        swapChainDesc.Flags = 0;
+	
+        DX_RESULT(pDXGIFactory->CreateSwapChainForHwnd(pDevice.Get(), window.GetWin32WindowHandle(), &swapChainDesc, nullptr, nullptr, (IDXGISwapChain1**)m_pSwapChainD3D.ReleaseAndGetAddressOf()));
     }
 
     void SwapChain::Present(uint32_t syncInterval, uint32_t flags) const

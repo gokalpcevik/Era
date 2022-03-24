@@ -9,7 +9,6 @@ namespace Era
 		CreateIndexBuffer(pDevice, meshAsset);
 		CreateVertexBuffer(pDevice, meshAsset);
 		CreateVertexShaderConstantBuffer(pDevice);
-
 	}
 
 	void MeshRendererComponent::SetWorldViewProjectionMatrices(ID3D11DeviceContext* pContext,

@@ -67,11 +67,11 @@ namespace Era
 	{
 		m_VertexShader->Bind(m_DeviceCtx);
 		m_InputLayout->Bind(m_DeviceCtx);
-		m_PixelShader->Bind(m_DeviceCtx);
 		m_DefaultConstantBuffer->Bind(m_DeviceCtx);
 		m_Textures->BindToPixelShader(m_DeviceCtx);
 		m_SamplerState->Bind(m_DeviceCtx);
 		m_RasterizerState->Bind(m_DeviceCtx);
+		m_PixelShader->Bind(m_DeviceCtx);
 
 		UINT startSlot = 1;
 		for (auto& cb : m_ConstantBuffers)
@@ -82,6 +82,21 @@ namespace Era
 				++startSlot;
 			}
 		}
+	}
+
+	void Material::UnbindTextures()
+	{
+		m_Textures->UnbindFromPixelShader(m_DeviceCtx);
+	}
+
+	auto Material::GetShininess() const -> float
+	{
+		return m_DefaultCBData.Shininess;
+	}
+
+	auto Material::GetTexture(size_t index) const -> const Texture2DRef&
+	{
+		return m_Textures->GetTexture(index);
 	}
 
 	void Material::SetData(ID3D11DeviceContext* pContext, void* data, size_t index) const

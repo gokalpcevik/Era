@@ -33,6 +33,27 @@ namespace Era
         }
     };
 
+    struct ApplicationStats
+    {
+        Uint64 m_LastTickCount = 0;
+        Uint64 m_FrameTime = 0;
+
+        auto GetFPS() const -> float
+        {
+            return 1.0f / ((float)m_FrameTime / (float)SDL_GetPerformanceFrequency());
+        }
+
+        auto GetFrameTimeMillis() const -> float
+        {
+            return (float)m_FrameTime / (float)SDL_GetPerformanceFrequency() * 1000.0f;
+        }
+
+        auto GetFrameTimeSeconds() const -> float
+        {
+            return (float)m_FrameTime / (float)SDL_GetPerformanceCounter();
+        }
+    };
+
     class Application
     {
     public:
@@ -53,12 +74,9 @@ namespace Era
         Entity camera;
         Entity directionalLight;
         Entity box;
-        Entity box2;
-        float xDir = 0.0f;
-        float m_LastTickCount = 0.0f;
-        float m_FrameTime = 0.0f;
-
+        ApplicationStats m_Stats{};
         MaterialRef mat;
+        MaterialRef mat2;
         char buf[512] = "Assets/white.png";
     };
 }

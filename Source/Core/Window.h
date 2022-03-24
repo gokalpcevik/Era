@@ -35,6 +35,8 @@ namespace Era
         [[nodiscard]] auto GetWin32WindowHandle() const -> HWND;
         [[nodiscard]] auto GetRenderer() const -> const std::shared_ptr<Renderer>& { return m_pRenderer; }
 
+		void SetTitle(const char* title);
+
 		void Subscribe(IWindowListener* pListener);
 	private:
 		void NotifyWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height) const;

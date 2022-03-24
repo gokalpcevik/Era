@@ -11,6 +11,7 @@ namespace Era
 
 	void TextureArray::Erase(size_t index)
 	{
+		if (m_Textures.size() == 0) return;
 		auto it = m_Textures.begin();
 		std::advance(it, index);
 		m_Textures.erase(it);
@@ -36,5 +37,18 @@ namespace Era
 			SRViews.push_back(t->GetShaderResourceView().GetAddressOf());
 		}
 		pContext->PSSetShaderResources(0u, m_Textures.size(), *SRViews.data());
+	}
+
+	void TextureArray::UnbindFromPixelShader(ID3D11DeviceContext* pContext)
+	{
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		pContext->PSSetShaderResources(0, 1, nullSRV);
+	}
+
+	auto TextureArray::GetTexture(size_t index) const -> const Texture2DRef&
+	{
+		auto iter = m_Textures.begin();
+		std::advance(iter, index);
+		return *iter;
 	}
 }

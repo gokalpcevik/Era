@@ -95,6 +95,11 @@ namespace Era
         return m_window == nullptr;
     }
 
+	void Window::SetTitle(const char* title)
+	{
+		SDL_SetWindowTitle(m_window, title);
+	}
+
 	void Window::Subscribe(IWindowListener* pListener)
 	{
 		m_Listeners.push_back(pListener);

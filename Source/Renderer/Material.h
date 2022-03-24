@@ -49,18 +49,21 @@ namespace Era
 		void PushTexture(const Texture2DRef& texture) const;
 		void SetSamplerState(const SamplerStateRef& samplerState) ;
 		void RemoveTexture(const size_t index) const;
+		void SetShininess(float s);
 
 		[[nodiscard]] auto GetCullMode() const -> CullMode { return m_CullMode; }
+		auto GetShininess() const -> float;
+		auto GetTexture(size_t index) const -> const Texture2DRef&;
 		/*
 		 * @data Data to be set.
 		 * @index Determines which buffer should the data be set.
 		 */
 		void SetData(ID3D11DeviceContext* pContext,void* data,size_t index) const;
-		void SetShininess(float s);
 	private:
 		static auto GetNumberOfConstantBuffers(ID3DBlob* blob) -> size_t;
 		void UpdateLightData(ID3D11DeviceContext* pContext, const PSDefaultCBufferData& data) const;
 		void Bind() const;
+		void UnbindTextures();
 	private:
 		ID3D11Device* m_Device{ nullptr };
 		ID3D11DeviceContext* m_DeviceCtx{ nullptr };
