@@ -33,7 +33,7 @@ namespace Era
         void DrawMesh(const MeshRendererComponent& mrc);
         auto GetWindow() const -> Window * { return m_pWindow; }
 
-        uint64_t GetDrawCallCount() const { return m_DrawCalls; }
+        auto GetDrawCallCount() const -> uint64_t { return m_DrawCalls; }
 
         [[nodiscard]] auto GetGraphicsDevice() const -> const std::shared_ptr<GraphicsDevice>& { return m_Device; }
         [[nodiscard]] auto GetSwapChain() const -> const std::shared_ptr<SwapChain>& { return m_SwapChain; }
