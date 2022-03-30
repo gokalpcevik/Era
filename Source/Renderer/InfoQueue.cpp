@@ -91,7 +91,11 @@ namespace Era
                     //ERA_INFO("{0} \n", msg->pDescription);
                     break;
                 }
-                case D3D11_MESSAGE_SEVERITY_MESSAGE: break;
+                case D3D11_MESSAGE_SEVERITY_MESSAGE:
+	                {
+                    ERA_INFO("{0} \n", msg->pDescription);
+                    break;
+	                }
                 default:
                     break;
 

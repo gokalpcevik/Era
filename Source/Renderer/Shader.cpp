@@ -42,7 +42,7 @@ namespace Era
 		}
 		ERA_INFO("Now compiling shader>{0}", shaderFilePath.string());
 		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
+#if defined(DEBUG) || defined(_DEBUG)
 		flags |= D3DCOMPILE_DEBUG;
 #endif
 		LPCSTR const entryPoint = "main";

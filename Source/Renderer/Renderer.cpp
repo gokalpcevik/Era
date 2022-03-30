@@ -16,7 +16,7 @@ namespace Era
         InfoQueue::InitDevice(m_Device->GetD3D11Device3().Get());
         InfoQueue::InitDXGI();
         m_DeviceContext->CreateBackBufferRTV(m_Device->GetD3D11Device3().Get(),m_SwapChain->GetDXGISwapChain().Get());
-        m_DeviceContext->CreateDepthStencilView_State(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
+        m_DeviceContext->CreateDepthStencilViewAndState(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
         D3D11_VIEWPORT vp{};
         vp.Height = static_cast<float>(m_pWindow->GetHeight());
         vp.Width = static_cast<float>(m_pWindow->GetWidth());
@@ -30,7 +30,8 @@ namespace Era
 
     void Renderer::Clear(const float colorRGBA[]) const
     {
-        m_DeviceContext->Clear(colorRGBA);
+	    m_DeviceContext->BindBackBufferRTVAndStencilView();
+	    m_DeviceContext->Clear(colorRGBA);
     }
 
     void Renderer::Present(uint32_t syncInterval, uint32_t flags)
@@ -47,6 +48,7 @@ namespace Era
 
     void Renderer::DrawMesh(const MeshRendererComponent& mrc)
     {
+        mrc.GetMaterial()->UnbindTextures();
 	    ID3D11DeviceContext* pContext = m_DeviceContext->GetD3D11DeviceContext().Get();
         mrc.GetVertexBuffer()->Bind(pContext);
         mrc.GetIndexBuffer()->Bind(pContext);
@@ -55,14 +57,13 @@ namespace Era
         pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_DeviceContext->DrawIndexed(mrc.GetIndexBuffer()->GetCount(), 0, 0);
         m_DrawCalls++;
-        mrc.GetMaterial()->UnbindTextures();
     }
 
     void Renderer::OnWindowResized(SDL_Window* resizedWindow, uint32_t width, uint32_t height)
     {
         m_DeviceContext->ResetBackBufferRTVs();
         m_SwapChain->ResizeBuffers();
-        m_DeviceContext->CreateDepthStencilView_State(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
+        m_DeviceContext->CreateDepthStencilViewAndState(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
         m_DeviceContext->CreateBackBufferRTV(m_Device->GetD3D11Device3().Get(), m_SwapChain->GetDXGISwapChain().Get());
         D3D11_VIEWPORT vp{};
         vp.Height = static_cast<float>(m_pWindow->GetHeight());

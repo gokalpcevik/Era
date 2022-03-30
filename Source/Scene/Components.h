@@ -146,9 +146,10 @@ namespace Era
 
 	struct DirectionalLightComponent
 	{
-		DX::XMFLOAT4 LightDirection{ 0.0f,0.0f,1.0f,1.0f }; //16
-		DX::XMFLOAT4 AmbientLightColor{ 1.0f,1.0f,1.0f,1.0f }; //12
-		DX::XMFLOAT4 DiffuseLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
-		DX::XMFLOAT4 SpecularLightColor{ 1.0f,1.0f,1.0f ,1.0f};; //12
+		DX::XMFLOAT3 LightDirection{ 0.0f,0.0f,1.0f };
+		DX::XMFLOAT4 AmbientLightColor{ 1.0f,1.0f,1.0f,1.0f }; 
+		DX::XMFLOAT4 DiffuseLightColor{ 1.0f,1.0f,1.0f ,1.0f};;
+		DX::XMFLOAT4 SpecularLightColor{ 1.0f,1.0f,1.0f ,1.0f};
+		float Intensity = 10.0f;
 	};
 }

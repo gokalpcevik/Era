@@ -14,9 +14,9 @@ namespace Era
 		explicit Scene(const std::shared_ptr<Renderer>& pRenderer);
 
 		auto CreateEntity() -> Entity;
-		auto Destroy(Entity entity) -> void;
-		auto Update() -> void;
-		auto Draw() -> void;
+		void Destroy(Entity entity);
+		void Update();
+		void Draw();
 
 		template<typename T>
 		auto GetComponent(entt::entity entity) -> T&;

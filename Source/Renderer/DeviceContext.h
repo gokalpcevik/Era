@@ -23,19 +23,20 @@ namespace Era
         [[nodiscard]] auto GetBackBufferRTV() const -> const ComPtr<ID3D11RenderTargetView>& { return m_pBackBufferRTV; }
 
     private:
-        void Clear(const float* color);
+        void Clear(const float* color) const;
         void CreateBackBufferRTV(ID3D11Device3* pDevice,IDXGISwapChain* pSwapChain);
-        void CreateDepthStencilView_State(ID3D11Device3* pDevice,IDXGISwapChain* pSwapChain);
-        void ResetDepthStencilView_State();
+        void BindBackBufferRTVAndStencilView();
+        void CreateDepthStencilViewAndState(ID3D11Device3* pDevice,IDXGISwapChain* pSwapChain);
+        void ResetMainDepthStencilViewAndState();
         void ResetBackBufferRTVs();
         void SetViewport(const D3D11_VIEWPORT& vp) const;
         void DrawIndexed(UINT IndexCount, UINT StartIndexLocation, INT BaseVertexLocation) const;
-
     private:
         ComPtr<ID3D11DeviceContext> m_pDeviceContextD3D = nullptr;
         ComPtr<ID3D11RenderTargetView> m_pBackBufferRTV = nullptr;
-        ComPtr<ID3D11DepthStencilView> m_pDepthSV = nullptr;
-        ComPtr<ID3D11DepthStencilState> m_pDepthSS = nullptr;
-
+        ComPtr<ID3D11DepthStencilView> m_MainDepthStencilView = nullptr;
+        ComPtr<ID3D11DepthStencilView> m_ShadowMapDepthStencilView = nullptr;
+        ComPtr<ID3D11DepthStencilState> m_MainDepthStencilState = nullptr;
+        ComPtr<ID3D11DepthStencilState> m_ShadowMapDepthStencilState = nullptr;
     };
 }

@@ -1,7 +1,3 @@
-//
-// Created by Gokalp on 12/22/2021.
-//
-
 #include "SwapChain.h"
 #include "../Core/Window.h"
 
@@ -24,7 +20,7 @@ namespace Era
 
         ERA_INFO("Adapter Description: {0}", adapterDescriptionPtr);
         delete[] adapterDescriptionPtr;
-    	ERA_INFO("Dedicated Video Memory: {0}MB", (size_t)AdapterDesc.DedicatedVideoMemory/1024/1024);
+        ERA_INFO("Dedicated Video Memory: {0}MB", (size_t)AdapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
         swapChainDesc.Width = window.GetWidth();
@@ -39,15 +35,15 @@ namespace Era
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
         swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
         swapChainDesc.Flags = 0;
-	
+
         DX_RESULT(pDXGIFactory->CreateSwapChainForHwnd(pDevice.Get(), window.GetWin32WindowHandle(), &swapChainDesc, nullptr, nullptr, (IDXGISwapChain1**)m_pSwapChainD3D.ReleaseAndGetAddressOf()));
     }
 
     void SwapChain::Present(uint32_t syncInterval, uint32_t flags) const
     {
-        if(m_pSwapChainD3D)
+        if (m_pSwapChainD3D)
         {
-	        if(HRESULT hr = m_pSwapChainD3D->Present(syncInterval,flags); hr == DXGI_ERROR_DEVICE_REMOVED)
+            if (HRESULT hr = m_pSwapChainD3D->Present(syncInterval, flags); hr == DXGI_ERROR_DEVICE_REMOVED)
             {
                 ERA_ERROR("Error while IDXGISwapChain::Present : DXGI_ERROR_DEVICE_REMOVED");
             }
@@ -60,6 +56,6 @@ namespace Era
 
     void SwapChain::ResizeBuffers() const
     {
-        DX_RESULT(m_pSwapChainD3D->ResizeBuffers(0,0,0,DXGI_FORMAT_UNKNOWN,0));
+        DX_RESULT(m_pSwapChainD3D->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
     }
 }

@@ -48,6 +48,7 @@ namespace Era
 		auto const meshView = m_Registry.view<MeshRendererComponent, TransformComponent>();
 
 		auto* pContext = m_Renderer->GetGraphicsDevice()->GetD3D11DeviceContext().Get();
+
 		for (auto const entity : meshView)
 		{
 			auto&& [mrc, tc] = m_Registry.get<MeshRendererComponent, TransformComponent>(entity);
@@ -58,13 +59,15 @@ namespace Era
 
 			if(pDirectionalLight)
 			{
-				PSDefaultCBufferData data{};
+				PSDefaultCBuffer data{};
 				DX::XMStoreFloat4(&data.CameraPosition, pCamera->GetCameraPosition());
 				data.LightDirection = pDirectionalLight->LightDirection;
-				data.AmbientLightColor = pDirectionalLight->AmbientLightColor;
 				data.DiffuseLightColor = pDirectionalLight->DiffuseLightColor;
 				data.SpecularLightColor = pDirectionalLight->SpecularLightColor;
-				data.Shininess = mrc.GetMaterial()->GetShininess();
+				data.Intensity = pDirectionalLight->Intensity;
+				data.Roughness = mrc.GetMaterial()->GetRoughness();
+				data.Metallic = mrc.GetMaterial()->GetMetallic();
+				data.AO = mrc.GetMaterial()->GetAO();
 				mrc.GetMaterial()->UpdateLightData(pContext, data);
 			}
 			m_Renderer->DrawMesh(mrc);

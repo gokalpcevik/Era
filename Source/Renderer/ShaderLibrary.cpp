@@ -36,7 +36,7 @@ namespace Era
 		auto const shaderType = extension;
 		if (shaderType == ShaderType::Unknown)
 		{
-			ERA_ERROR("Unknown shader extension file!: {0}", extension);
+			ERA_ERROR("Unknown shader extension file!: {0}", shaderFilePath.extension().string());
 			return { nullptr,nullptr };
 		}
 

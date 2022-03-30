@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <random>
 #include "ErrorChecker.h"
-
+#include "spdlog/fmt/bin_to_hex.h"
 namespace Era
 {
 	using Microsoft::WRL::ComPtr;

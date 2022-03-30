@@ -1,0 +1,66 @@
+#include "MicrofacetBRDF.hlsl"
+
+Texture2D g_Diffuse;
+Texture2D g_Roughness;
+Texture2D g_AO;
+Texture2D g_Metallic;
+SamplerState g_TextureSampler;
+
+struct DirectionalLight
+{
+    float4 DiffuseLightColor;
+    float4 SpecularLightColor;
+    float3 L;
+    float Intensity;
+};
+
+struct Material
+{
+    float Roughness;
+    float Metallic;
+    float AO;
+};
+
+cbuffer ERA_CBUFFER_0
+{
+    float4 CameraPosition;
+    DirectionalLight light;
+};
+
+struct PSInput
+{
+    float4 Position : SV_Position;
+    float4 WorldPosition : WORLD_POSITION;
+    float3 Normal : NORMAL;
+    float2 UV : UV;
+};
+struct PSOutput
+{
+    float4 Color : SV_TARGET;
+};
+
+
+void main(in  PSInput  PSIn,
+    out PSOutput PSOut)
+{
+    float3 V = (normalize(CameraPosition - PSIn.WorldPosition)).xyz;
+    float3 L = normalize(light.L);
+    float3 H = normalize(L + V);
+    float3 N = PSIn.Normal;
+    float4 diffuse = g_Diffuse.Sample(g_TextureSampler,PSIn.UV);
+    float roughness = g_Roughness.Sample(g_TextureSampler,PSIn.UV).x;
+    float metallic = g_Metallic.Sample(g_TextureSampler, PSIn.UV).x;
+    float AO = g_AO.Sample(g_TextureSampler,PSIn.UV).x;
+    
+    float D_term = D_GGX(Alpha_Burley(roughness),max(0.0f, saturate(dot(N, H))));
+    float G_term = G_SchlickGGX(max(0.0f, dot(N, V)), K_Disney(roughness));
+    float3 F0 = float3(0.04f,0.04f,0.04f);
+    F0 = lerp(F0,g_Diffuse.Sample(g_TextureSampler,PSIn.UV).xyz,metallic);
+    float3 F_term = Fresnel_SchlickModified(F0, max(0.0f, dot(V, H)));
+    float geometry_term = max(0.0f, dot(L, N));
+    float3 specular_amount = D_term * F_term * G_term  / 4.0f / max(0.0f, dot(V, N)) / max(0.0f, dot(L, N));
+    float4 specular_color = light.SpecularLightColor * float4(specular_amount,1.0f);
+
+    float3 ambient = 0.15f * diffuse * AO;
+    PSOut.Color = light.DiffuseLightColor * diffuse * geometry_term + geometry_term * specular_color * light.Intensity + float4(ambient,1.0f);
+}

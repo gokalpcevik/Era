@@ -14,7 +14,12 @@ namespace Era
         DX_RESULT(pDevice->CreateRenderTargetView(pBackBufferRsc.Get(), nullptr, &m_pBackBufferRTV));
     }
 
-    void DeviceContext::CreateDepthStencilView_State(ID3D11Device3* pDevice, IDXGISwapChain* pSwapChain)
+    void DeviceContext::BindBackBufferRTVAndStencilView()
+    {
+		m_pDeviceContextD3D->OMSetRenderTargets(1u, m_pBackBufferRTV.GetAddressOf(), m_MainDepthStencilView.Get());
+    }
+
+    void DeviceContext::CreateDepthStencilViewAndState(ID3D11Device3* pDevice, IDXGISwapChain* pSwapChain)
     {
 		ComPtr<ID3D11Texture2D> pDepthStencilTexture2D;
 
@@ -55,28 +60,27 @@ namespace Era
 		DepthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		DepthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-		DX_RESULT(pDevice->CreateDepthStencilState(&DepthStencilDesc, &m_pDepthSS));
+		DX_RESULT(pDevice->CreateDepthStencilState(&DepthStencilDesc, &m_MainDepthStencilState));
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilViewDesc{};
 		DepthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 		DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		DepthStencilViewDesc.Texture2D.MipSlice = 0u;
 
-		DX_RESULT(pDevice->CreateDepthStencilView(pDepthStencilTexture2D.Get(), &DepthStencilViewDesc, &m_pDepthSV));
+		DX_RESULT(pDevice->CreateDepthStencilView(pDepthStencilTexture2D.Get(), &DepthStencilViewDesc, &m_MainDepthStencilView));
 		
     }
 
-    void DeviceContext::ResetDepthStencilView_State()
+    void DeviceContext::ResetMainDepthStencilViewAndState()
     {
-		m_pDepthSV.Reset();
-		m_pDepthSS.Reset();
+		m_MainDepthStencilView.Reset();
+		m_MainDepthStencilState.Reset();
     }
 
-    void DeviceContext::Clear(const float* color)
+    void DeviceContext::Clear(const float* color) const
     {
-		m_pDeviceContextD3D->OMSetRenderTargets(1u, m_pBackBufferRTV.GetAddressOf(), m_pDepthSV.Get());
         m_pDeviceContextD3D->ClearRenderTargetView(m_pBackBufferRTV.Get(),color);
-		m_pDeviceContextD3D->ClearDepthStencilView(m_pDepthSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		m_pDeviceContextD3D->ClearDepthStencilView(m_MainDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
     }
 
     void DeviceContext::ResetBackBufferRTVs()
@@ -94,4 +98,6 @@ namespace Era
     {
 		m_pDeviceContextD3D->DrawIndexed(IndexCount, StartIndexLocation, BaseVertexLocation);
     }
+
+
 }

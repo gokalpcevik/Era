@@ -1,12 +1,13 @@
 cbuffer UICBuf
 {
-	float4x4 g_Transform;
+	float4x4 g_WorldProjection;
+    float2 g_Translation;
 };
 
 struct VSInput
 {
-    float3 Position : POSITION;
-    float2 UV : UV;
+    float4 Position : POSITION;
+    float2 UV : UV0;
     float4 Color : COLOR;
 };
 
@@ -19,7 +20,7 @@ struct PSInput
 
 void main(in VSInput VSIn, out PSInput PSIn)
 {
-    PSIn.Position = mul(float4(VSIn.Position, 1.0f), g_Transform);
+    PSIn.Position = mul(VSIn.Position , g_WorldProjection);
     PSIn.UV = VSIn.UV;
     PSIn.Color = VSIn.Color;
 }

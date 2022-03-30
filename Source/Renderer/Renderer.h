@@ -36,6 +36,7 @@ namespace Era
         auto GetDrawCallCount() const -> uint64_t { return m_DrawCalls; }
 
         [[nodiscard]] auto GetGraphicsDevice() const -> const std::shared_ptr<GraphicsDevice>& { return m_Device; }
+        [[nodiscard]] auto GetDeviceContext() const -> const std::shared_ptr<DeviceContext>& { return m_DeviceContext; }
         [[nodiscard]] auto GetSwapChain() const -> const std::shared_ptr<SwapChain>& { return m_SwapChain; }
 
     private:

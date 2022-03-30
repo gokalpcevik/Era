@@ -1,4 +1,4 @@
-Texture2D g_Texture;
+Texture2D g_Diffuse;
 SamplerState g_TextureSampler;
 
 struct DirectionalLight
@@ -7,13 +7,10 @@ struct DirectionalLight
     float4 AmbientLightColor; // 12 
     float4 DiffuseLightColor; // 12
     float4 SpecularLightColor; // 12 
-    float AmbientCoefficient; // 4
-    float DiffuseCoefficient; // 4
-    float SpecularCoefficient; // 4
     float Shininess;
 };
 
-cbuffer LitCBuf
+cbuffer ERA_CBUFFER_0
 {
     float4 CameraPosition;
     DirectionalLight light;
@@ -26,33 +23,28 @@ struct PSInput
     float3 Normal : NORMAL;
     float2 UV : UV;
     float4 Color : COLOR;
-    bool bUseSamplers : USESAMPLERS;
+    uint UseTextures : USE_TEXTURES;
 };
 struct PSOutput
 {
     float4 Color : SV_TARGET;
 };
+
 void main(in  PSInput  PSIn,
     out PSOutput PSOut)
 {
     //Ambient
-    float4 ambientLight = light.AmbientLightColor * light.AmbientCoefficient;
+    float4 ambientLight = light.AmbientLightColor / 3.1415926f;
     // Diffuse
     float amountDiffuse = max(0.0,dot(normalize(light.LightDirection),float4(PSIn.Normal,1.0f)));
-    float4 diffuseLight = light.DiffuseCoefficient * amountDiffuse * light.DiffuseLightColor;
+    float4 diffuseLight = amountDiffuse * light.DiffuseLightColor;
+    diffuseLight = g_Diffuse.Sample(g_TextureSampler,PSIn.UV) * diffuseLight;
     //Specular
-    float3 viewDirection = -(normalize(PSIn.WorldPosition - CameraPosition)).xyz;
+    float3 viewDirection = (normalize(CameraPosition - PSIn.WorldPosition)).xyz;
     float3 halfwayDir = normalize(light.LightDirection.xyz + viewDirection);
     float amountSpecular = pow(max(0.0f,dot(halfwayDir,PSIn.Normal)),light.Shininess);
-    float4 specularLight = light.SpecularCoefficient * amountSpecular * light.SpecularLightColor;
+    float4 specularLight = amountSpecular * light.SpecularLightColor;
 
+    PSOut.Color = saturate(ambientLight + diffuseLight + specularLight);
 
-    if(PSIn.bUseSamplers)
-    {
-        PSOut.Color = saturate(g_Texture.Sample(g_TextureSampler,PSIn.UV) * (ambientLight + diffuseLight));
-    }
-    else
-    {
-        PSOut.Color = saturate(PSIn.Color * (ambientLight + diffuseLight + specularLight));
-    }
 }

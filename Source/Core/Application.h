@@ -71,12 +71,12 @@ namespace Era
         Timer m_Timer;
     	bool m_Running = true;
         SceneRef m_Scene;
-        Entity camera;
-        Entity directionalLight;
-        Entity box;
+        Entity m_Camera;
+        Entity m_Light;
+        Entity m_MonkeyEntity;
         ApplicationStats m_Stats{};
-        MaterialRef mat;
-        MaterialRef mat2;
+        MaterialRef m_MonkeyMaterial;
+        DX::XMFLOAT4 m_Rotation{};
         char buf[512] = "Assets/white.png";
     };
 }

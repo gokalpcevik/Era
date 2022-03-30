@@ -13,7 +13,7 @@ namespace Era
 		PSBlob = ShaderLibrary::GetOrAddShaderBlob(m_PixelShaderPath);
 		m_VertexShader = std::make_shared<VertexShader>(m_Device, VSBlob);
 		m_PixelShader = std::make_shared<PixelShader>(m_Device, PSBlob);
-		m_DefaultConstantBuffer = std::make_shared<ConstantBuffer<PSDefaultCBufferData>>(m_Device,m_DefaultCBData,ConstantBufferType::Pixel);
+		m_DefaultConstantBuffer = std::make_shared<ConstantBuffer<PSDefaultCBuffer>>(m_Device,m_DefaultCBData,ConstantBufferType::Pixel);
 		VertexLayout layout(VSBlob.Blob);
 		m_InputLayout = std::make_shared<InputLayout>(m_Device, VSBlob.Blob, std::move(layout));
 		m_RasterizerDesc.FillMode = static_cast<D3D11_FILL_MODE>(FillMode::FillSolid);
@@ -46,6 +46,21 @@ namespace Era
 		m_FillMode = mode;
 		m_RasterizerDesc.FillMode = static_cast<D3D11_FILL_MODE>(mode);
 		m_RasterizerState->Reset(m_Device, m_RasterizerDesc);
+	}
+
+	void Material::SetRoughness(float r)
+	{
+		m_DefaultCBData.Roughness = r;
+	}
+
+	void Material::SetMetallic(float m)
+	{
+		m_DefaultCBData.Metallic = m;
+	}
+
+	void Material::SetAO(float ao)
+	{
+		m_DefaultCBData.AO = ao;
 	}
 
 	void Material::PushTexture(const Texture2DRef& texture) const
@@ -89,11 +104,6 @@ namespace Era
 		m_Textures->UnbindFromPixelShader(m_DeviceCtx);
 	}
 
-	auto Material::GetShininess() const -> float
-	{
-		return m_DefaultCBData.Shininess;
-	}
-
 	auto Material::GetTexture(size_t index) const -> const Texture2DRef&
 	{
 		return m_Textures->GetTexture(index);
@@ -104,10 +114,6 @@ namespace Era
 		m_ConstantBuffers[index]->Update(pContext, data);
 	}
 
-	void Material::SetShininess(float s)
-	{
-		m_DefaultCBData.Shininess = s;
-	}
 
 	size_t Material::GetNumberOfConstantBuffers(ID3DBlob* blob)
 	{
@@ -119,7 +125,7 @@ namespace Era
 		return shaderDesc.ConstantBuffers;
 	}
 
-	void Material::UpdateLightData(ID3D11DeviceContext* pContext, const PSDefaultCBufferData& data) const
+	void Material::UpdateLightData(ID3D11DeviceContext* pContext, const PSDefaultCBuffer& data) const
 	{
 		m_DefaultConstantBuffer->Update(pContext, data);
 	}
